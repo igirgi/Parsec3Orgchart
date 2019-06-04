@@ -1,0 +1,261 @@
+﻿<html>
+<head>
+  <meta charset="UTF-8">
+    <link href="css/tableexport.css" rel="stylesheet">
+    <script type="text/javascript" src="js/jquery.min.js"></script>
+    <script src="js/moment.min.js"></script>
+    <script type="text/javascript" src="js/xlsx.core.min.js"></script>
+    <script type="text/javascript" src="js/Blob.min.js"></script>
+    <script type="text/javascript" src="js/FileSaver.min.js"></script>
+    <script type="text/javascript" src="js/tableexport.js"></script>
+
+        
+
+<style>
+html, body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+  margin: 0;
+  padding:0;
+}
+#tabdiv {
+  margin: 0;
+  padding:0;  
+}
+</style>
+</head>
+<body>
+    <script>
+        var IEbullshit = /MSIE \d|Trident.*rv:/.test(navigator.userAgent);
+        if(IEbullshit) {
+            document.write('<link href="css/daterangepicker.css" rel="stylesheet">');
+            document.write('<script src="js/daterangepicker.js"><\/script>');
+        }else {
+            document.write('<link href="css/lightpick.css" rel="stylesheet">');
+            document.write('<script type="text/javascript" src="js/Lightpick.js"><\/script>');
+        }
+    </script>
+
+    <table id="table-1">
+        <thead>
+        <tr>
+        <th>С: <input type="text" id="from" /><span id="fromspan" style="display:none;">kuku</span></th>
+        <th>По: <input type="text" id="to" /><span id="tospan" style="display:none;">kuku</span></th>
+        <th><img src="img/find.png" onclick="getdata()"></th>
+        <th colspan=1000><img src="img/export.png" style="float:left;" onclick="toxlsx()"></th>
+        </tr>
+        </thead>
+    </table>
+
+
+        <table id="table-2" border=1>
+                <tbody></tbody>
+        </table>
+
+        <script>
+            function getdata() {
+                var url = "getHistory2Excel.aspx" + window.location.search +
+                    "&from=" + document.getElementById("from").value +
+                    "&to=" + document.getElementById("to").value
+                get(url);
+            }
+            var dates = {
+                convert: function (d) {
+                    // Converts the date in d to a date-object. The input can be:
+                    //   a date object: returned without modification
+                    //  an array      : Interpreted as [year,month,day]. NOTE: month is 0-11.
+                    //   a number     : Interpreted as number of milliseconds
+                    //                  since 1 Jan 1970 (a timestamp) 
+                    //   a string     : Any format supported by the javascript engine, like
+                    //                  "YYYY/MM/DD", "MM/DD/YYYY", "Jan 31 2009" etc.
+                    //  an object     : Interpreted as an object with year, month and date
+                    //                  attributes.  **NOTE** month is 0-11.
+                    return (
+                        d.constructor === Date ? d :
+                        d.constructor === Array ? new Date(d[0], d[1], d[2]) :
+                        d.constructor === Number ? new Date(d) :
+                        d.constructor === String ? new Date(d) :
+                        typeof d === "object" ? new Date(d.year, d.month, d.date) :
+                        NaN
+                    );
+                },
+                pick: function (s) {
+                    var from = s.split("/")
+                    return new Date(from[2], from[1] - 1, from[0])
+                },
+                format: function (MyDate) {
+                    return ('0' + MyDate.getDate()).slice(-2) + '-'
+                        + ('0' + (MyDate.getMonth() + 1)).slice(-2) + '-'
+                        + MyDate.getFullYear();
+                },
+                compare: function (a, b) {
+                    // Compare two dates (could be of any type supported by the convert
+                    // function above) and returns:
+                    //  -1 : if a < b
+                    //   0 : if a = b
+                    //   1 : if a > b
+                    // NaN : if a or b is an illegal date
+                    // NOTE: The code inside isFinite does an assignment (=).
+                    return (
+                        isFinite(a = this.convert(a).valueOf()) &&
+                        isFinite(b = this.convert(b).valueOf()) ?
+                        (a > b) - (a < b) :
+                        NaN
+                    );
+                },
+                inRange: function (d, start, end) {
+                    // Checks if date in d is between dates in start and end.
+                    // Returns a boolean or NaN:
+                    //    true  : if d is between start and end (inclusive)
+                    //    false : if d is before start or after end
+                    //    NaN   : if one or more of the dates is illegal.
+                    // NOTE: The code inside isFinite does an assignment (=).
+                    return (
+                         isFinite(d = this.convert(d).valueOf()) &&
+                         isFinite(start = this.convert(start).valueOf()) &&
+                         isFinite(end = this.convert(end).valueOf()) ?
+                         start <= d && d <= end :
+                         NaN
+                     );
+                }
+            }
+
+            function formatData(res) {
+                var bd = document.getElementById("table-2").getElementsByTagName('tbody')[0];
+                bd.innerHTML = "";
+                var from = document.getElementById('from').value,
+                    to = document.getElementById('to').value;
+                from = dates.pick(from);
+                to = dates.pick(to);                
+//1st row ячейки "С" "ПО" и хвост
+                var row = bd.insertRow(bd.rows.length);
+                row.insertCell(-1).appendChild(document.createTextNode('С: '+ dates.format(from)));
+                row.insertCell(-1).appendChild(document.createTextNode('По: ' + dates.format(to)));
+
+                var dats = []; //массив строковых дат диапазона (заполняется в проходе по 2nd row)                
+
+                var cell = row.insertCell(-1);
+                cell.colSpan = 1000;
+//2nd row строка дат диапазона
+                row = bd.insertRow(bd.rows.length);
+                row.insertCell(-1).colSpan = 3;
+                var i = 0, cdate = from;
+                while (dates.inRange(cdate, from, to)) {
+                    cell = row.insertCell(-1);
+                    cell.appendChild(document.createTextNode(  dates.format(cdate) ));
+                    cell.colSpan = 5; //на каждую дату - 5 подколонок данных
+                    dats.push(dates.format(cdate));
+                    cdate.setDate(cdate.getDate() + 1);
+                }
+                
+//3rd строка заголовка
+                row = bd.insertRow(bd.rows.length);
+                row.insertCell(-1).appendChild(document.createTextNode('Подразделение'));
+                row.insertCell(-1).appendChild(document.createTextNode('ФИО'));
+                row.insertCell(-1).appendChild(document.createTextNode('Отработано часов'));
+                for (var j = 0; j < dats.length; j++) {
+                    row.insertCell(-1).appendChild(document.createTextNode("Первый вход"));
+                    row.insertCell(-1).appendChild(document.createTextNode("Последний выход"));
+                    row.insertCell(-1).appendChild(document.createTextNode("Проходов турникета"));
+                    row.insertCell(-1).appendChild(document.createTextNode("Время в офисе"));
+                    row.insertCell(-1).appendChild(document.createTextNode("Время вне офиса"));
+                }
+
+                //проход по сотрудникам
+                for (var k = 0; k < res.length; k++) {
+                    var sum = 0, //сумма по строке
+                        sumCell;    //ячейка для суммы, заполняется задним числом
+                    row = bd.insertRow(bd.rows.length);
+                    row.insertCell(-1).appendChild(document.createTextNode(res[k].department));
+                    row.insertCell(-1).appendChild(document.createTextNode(res[k].name));
+                    sumCell = row.insertCell(-1);//.appendChild(document.createTextNode('Отработано часов'));
+                    var m = 0; //порядковый номер дня, на который у сотрудника есть данные
+                    for (var j = 0; j < dats.length; j++) { //проход по датам диапазона
+                        var q = res[k].h[m];
+                        var eq = q //данные сотрудника не кончились
+                            && (q.date == dats[j]);   //на дату диапазона есть данные сотрудника
+                        row.insertCell(-1).appendChild(document.createTextNode(eq ? q.enter : " "));
+                        row.insertCell(-1).appendChild(document.createTextNode(eq ? q.eexit : " "));
+                        row.insertCell(-1).appendChild(document.createTextNode(eq ? q.eventscount : " "));
+                        row.insertCell(-1).appendChild(document.createTextNode(eq ? q.totalworktime : " "));
+                        sum += (eq ? q.totalworktime : 0);
+                        row.insertCell(-1).appendChild(document.createTextNode(eq ? q.totalouttime : " "));
+                        m += (eq ? 1 : 0);
+                    }
+                    sumCell.appendChild(document.createTextNode(parseFloat(Math.round(sum * 100 / 60) / 100).toFixed(2)));
+                }
+
+                //	for(var i=0; i<res.length; i++){
+                //		row= bd.insertRow(bd.rows.length);
+                //		row.insertCell(-1).appendChild( document.createTextNode( res[i].d'ФИО сотрудника') );
+                //	}
+            }
+
+
+            function get(url) {
+                var xhttp = window.XMLHttpRequest ? new XMLHttpRequest() : new ActiveXObject("Microsoft.XMLHTTP");
+                xhttp.onreadystatechange = function () {
+                    if (xhttp.readyState === 4 && xhttp.status === 200) {
+                        formatData(JSON.parse(xhttp.responseText));
+                        EXPORTTABLE = new TableExport(document.getElementById('table-2'), {
+                            formats: ['xlsx'],
+                            exportButtons: false,
+                            filename: 'super-secret-data'
+                        });
+                        //result = (xhttp.responseText);
+                    } else {
+                        result = {
+                            error: 'status="' + xhttp.statusText + ' (' + xhttp.status + ')", state="' + xhttp.readyState + '"'
+                        };
+                    }
+                };
+                xhttp.open("GET", url, true);
+                xhttp.send();
+            }
+
+    if(IEbullshit){
+        $('#from').daterangepicker({
+            opens: 'left',
+            autoUpdateInput: false
+           }, function(start, end, label) { 
+               document.getElementById('from').value = start.format("DD/MM/YYYY");
+               document.getElementById('to').value = end.format("DD/MM/YYYY");
+        }); 
+    }else{
+        new Lightpick({
+            field: document.getElementById('from'),
+            secondField: document.getElementById('to'),
+            repick: true,
+            singleDate: false,
+            lang: 'ru',
+            locale: {
+                tooltip: {
+                    one: 'день',
+                    few: 'дня',
+                    many: 'дней',
+                },
+                pluralize: function (i, locale) {
+                    if ('one' in locale && i % 10 === 1 && !(i % 100 === 11)) return locale.one;
+                    if ('few' in locale && i % 10 === Math.floor(i % 10) && i % 10 >= 2 && i % 10 <= 4 && !(i % 100 >= 12 && i % 100 <= 14)) return locale.few;
+                    if ('many' in locale && (i % 10 === 0 || i % 10 === Math.floor(i % 10) && i % 10 >= 5 && i % 10 <= 9 || i % 100 === Math.floor(i % 100) && i % 100 >= 11 && i % 100 <= 14)) return locale.many;
+                    if ('other' in locale) return locale.other;
+                    return '';
+                }
+            },
+            //                startDate: moment().startOf('month').add(7, 'day'),
+            //                endDate: moment().add(1, 'month').endOf('month').subtract(7, 'day'),
+            onSelect: function (start, end) {
+            }
+        });
+    }
+
+            var EXPORTTABLE;
+
+            function toxlsx() {
+                if (!EXPORTTABLE) return;
+                var exportData = EXPORTTABLE.getExportData()['table-2']['xlsx'];
+                //                   // data          // mime              // name              // extension
+                EXPORTTABLE.export2file(exportData.data, exportData.mimeType, exportData.filename, exportData.fileExtension, exportData.merges, exportData.RTL, exportData.sheetname);
+            }
+        </script>
+</body>
+</html>

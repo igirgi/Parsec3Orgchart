@@ -1,0 +1,68 @@
+<html>
+<head>
+  <meta charset="UTF-8">
+<script src="https://www.amcharts.com/lib/4/core.js"></script>
+<script src="https://www.amcharts.com/lib/4/charts.js"></script>
+<script src="https://www.amcharts.com/lib/4/themes/animated.js"></script>
+<style>
+html, body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+  margin: 0;
+  padding:0;
+}
+#chartdiv {
+  width: 600px;
+  height: 300px;
+  margin: 0;
+  padding:0;  
+}
+</style>
+</head>
+<body>
+<div id="chartdiv"></div>
+<script>
+am4core.useTheme(am4themes_animated);
+var chart = am4core.create("chartdiv", am4charts.XYChart);
+var data = [];
+var value = 50, value1=100;
+for(let i = 0; i < 300; i++){
+  let date = new Date();
+  date.setHours(0,0,0,0);
+  date.setDate(i);
+  value -= Math.round((Math.random() < 0.5 ? 1 : -1) * Math.random() * 10);
+  value1 -= Math.round((Math.random() < 0.5 ? 1 : -1) * Math.random() * 10);
+  data.push({date:date, value: value, "выход":value1, q:-500});
+}
+
+//chart.data = data;
+chart.dataSource.url="../histdata.aspx"+window.location.search;
+chart.dateFields = ["d"];
+chart.dataSource.parser = new am4core.JSONParser();
+// Create axes
+var dateAxis = chart.xAxes.push(new am4charts.DateAxis());
+dateAxis.renderer.minGridDistance = 60;
+
+var valueAxis = chart.yAxes.push(new am4charts.ValueAxis());
+
+// Create series
+var series = chart.series.push(new am4charts.LineSeries());
+series.dataFields.valueY = "o";
+series.dataFields.dateX = "d";
+series.tooltipText = "Опоздание {o}"
+
+var series1 = chart.series.push(new am4charts.LineSeries());
+series1.dataFields.valueY = "z";
+series1.dataFields.dateX = "d";
+series1.tooltipText = "Задержка {z}"
+
+chart.cursor = new am4charts.XYCursor();
+//chart.cursor.snapToSeries = series;
+chart.cursor.xAxis = dateAxis;
+
+//chart.scrollbarY = new am4core.Scrollbar();
+chart.scrollbarX = new am4core.Scrollbar();
+
+//var title = chart.titles.create();
+//title.text = "Speed";
+//title.fontSize = 25;
+</script>

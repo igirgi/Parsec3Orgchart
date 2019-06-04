@@ -1,0 +1,167 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Web;
+using System.Web.UI;
+using System.Web.UI.WebControls;
+using System.Configuration;
+using System.Collections.Specialized;
+using System.Data.SqlClient;
+using Newtonsoft.Json; 
+using orgWin.IntegrationWebService;
+
+namespace orgWin
+{
+    public partial class fromParsec : System.Web.UI.Page
+    {
+        Dictionary<string, ParsecNode> pnodes = new Dictionary<string, ParsecNode>();
+        Dictionary<string, Guid> userGuids = new Dictionary<string, Guid>();
+        IntegrationService igServ = new IntegrationService();
+        protected void Page_Load(object sender, EventArgs e)
+        {            
+            getStatic();
+            getDynamic();
+
+            Response.Clear();
+            Response.ContentType = "application/json; charset=utf-8";
+            Response.Write(JsonConvert.SerializeObject(pnodes.Values.ToList()));
+            Response.End();
+        }
+        private void getStatic()
+        {
+            var connectionString = ConfigurationManager.ConnectionStrings["ParsecReport"].ConnectionString;
+            using (SqlConnection sqlCon = new SqlConnection(connectionString))
+            {
+                sqlCon.Open();
+                string sqlc = "select * from orgChart";
+                SqlCommand cmd = new SqlCommand(sqlc, sqlCon);
+                SqlDataReader dr = cmd.ExecuteReader();
+                while (dr.Read())
+                {
+                    ParsecNode pn = new ParsecNode()
+                    {
+                        id = Convert.ToInt32(dr["id"]),
+                        pid = Convert.ToInt32(dr["pid"]),
+                        имя = dr["name"].ToString(),
+                        должность = dr["title"].ToString(),
+                        img = dr["img"].ToString(),
+                        мобильный_тел = dr["mobileTel"].ToString(),
+                        корпоративный_тел = dr["corpTel"].ToString(),
+                        tags = new string[] { dr["tag"].ToString().Trim() }
+                    };
+                    string ttag = dr["tag"].ToString().Trim();
+                    string sam = dr["sam"].ToString().Trim();
+                    if(ttag.Equals("person"))
+                        userGuids.Add(sam, new Guid(dr["itemGuid"].ToString()));                    
+                    pnodes.Add(sam, pn);
+                }
+                sqlCon.Close();
+            }
+        }
+        private void getDynamic()
+        {
+            IntegrationService igServ = new IntegrationService();
+            string domain = ConfigurationManager.AppSettings.Get("domain");
+            string dbuser = ConfigurationManager.AppSettings.Get("user");
+            string dbpassword = ConfigurationManager.AppSettings.Get("password");
+            string turniketString = ConfigurationManager.AppSettings.Get("turniket");
+            Guid turniket = new Guid(turniketString);
+            string orgRootString = ConfigurationManager.AppSettings.Get("orgRoot");
+            Guid orgRoot = new Guid(orgRootString);
+            SessionResult res = igServ.OpenSession(domain, dbuser, dbpassword);
+            if (res.Result != ClientState.Result_Success)
+            {
+                Response.Write("{\"err\":\"Can not open session to Parsek\"}");
+                return;
+            }
+            ClientState.SetSession(res.Value, domain, dbuser);
+
+            EventHistoryQueryParams param = new EventHistoryQueryParams();
+            param.StartDate = DateTime.Today.AddDays(-1).ToUniversalTime();
+            param.EndDate = DateTime.Today.ToUniversalTime();
+            param.Territories = new Guid[] { turniket };
+            param.EventsWithoutUser = false;
+            param.TransactionTypes = new uint[] { 590144, 590152, 65867, 590165, 590145, 590153, 65866, 590166 };
+            param.MaxResultSize = (10000);
+
+            string[] userSams = userGuids.Keys.ToArray();
+
+            for(int gg=0; gg<userSams.Length; gg++){
+                param.Users = new Guid[] { userGuids[userSams[gg]] };
+                doUser(param, userSams[gg]);
+            }
+            igServ.CloseSession(ClientState.SessionID);
+        }
+        private void doUser(EventHistoryQueryParams param, string sam)
+        {
+            GuidResult res1 = igServ.OpenEventHistorySession(ClientState.SessionID, param);
+            if (res1.Result != ClientState.Result_Success)
+            {
+                return;
+            }
+            Guid eventSessionID = res1.Value;
+
+            int _count = igServ.GetEventHistoryResultCount(ClientState.SessionID, eventSessionID);
+            EventHistoryFields constants = new EventHistoryFields();
+            List<Guid> fields = new List<Guid>();
+            fields.Add(EventHistoryFields.EVENT_TIME);
+            fields.Add(EventHistoryFields.EVENT_CODE_HEX);
+            fields.Add(EventHistoryFields.TAB_NUM);
+
+            EventObject[] events = null;
+                        
+            events = igServ.GetEventHistoryResult(ClientState.SessionID, eventSessionID, fields.ToArray(), 0, 10000);
+            for (int ii = 0; ii < events.Length; ii++)
+            {
+                switch ((string)events[ii].Values[1])
+                {
+                    case "90141":
+                    case "90149":
+                    case "90142":
+                    case "901A4":
+                    case "90156":
+                    case "901A5":  //КОДЫ ВЫХОДА
+                        if (events[ii].Values[2] != null)
+                        {
+                            string ssam = events[ii].Values[2].ToString().ToUpper();
+                            pnodes[sam].выход = events[ii].Values[0].ToString();
+                        }
+                        break;
+                }
+            }
+            for (int ii = events.Length - 1; ii >= 0; ii--)
+            {
+                switch ((string)events[ii].Values[1])
+                {
+                    case "90140":
+                    case "90148":
+                    case "1014B":
+                    case "90155":  //КОДЫ ВХОДА
+                        if (events[ii].Values[2] != null)
+                        {
+                            string ssam = events[ii].Values[2].ToString().ToUpper();
+                            ParsecNode pn = pnodes[sam];
+                            pn.вход = events[ii].Values[0].ToString();
+                        }
+                        break;
+                }
+            }
+            igServ.CloseEventHistorySession(ClientState.SessionID, eventSessionID);
+        }
+      
+    }
+    class ParsecNode
+    {
+        public int id;
+        public int pid;
+        public string[] tags;
+        public string имя;
+        public string должность;
+        public string вход;
+        public string выход;
+        public string img;
+        public string мобильный_тел;
+        public string корпоративный_тел;
+    }
+ 
+  }

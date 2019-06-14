@@ -9,14 +9,12 @@ namespace orgWin
     {
         public Guid id;
         public Guid pid;
-        public string tag;    //тип узла (org, person, in, out, absent)
+        public string type;    //тип узла org, person
         public string name;   //фамилия или название
         public string mlname; //имя отчество
         public string title;  //должность
-        public string boss;  //фамилия босса
+        public Guid? img;      //имя файла рисунка
         public string birthday;  //день рождения
-        public string enter;    //время входа
-        public string exit;     //время выхода        
         public string mob;      //мобильный телефон
         public string corp;     //корпоративный телефон
         public string mail;

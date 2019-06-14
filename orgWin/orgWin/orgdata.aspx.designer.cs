@@ -11,7 +11,7 @@ namespace orgWin
 {
 
 
-    public partial class orgdata
+    public partial class orgData
     {
 
         /// <summary>

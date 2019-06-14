@@ -26,73 +26,131 @@
 		
 </style>
     <script src="js/getorgchart.js"></script>
+	<script src="js/lodash.js"></script>
+    <script src="orgData.aspx"></script>
     <link href="css/getorgchart.css" rel="stylesheet" />
-
-<!-- script src="parsec3.js"></script -->
 </head>
 <body>
 <div id="tree"/>
-<script>
-var btnDiag = '<g data-action="diag" class="btn" transform="matrix(0.14,0,0,0.14,100,0)"><rect style="opacity:0" x="0" y="0" height="300" width="300" /><title>[tooltip]</title><path  fill="#686868" d="M149.996,0C67.157,0,0.001,67.158,0.001,149.997c0,82.837,67.156,150,149.995,150s150-67.163,150-150 C299.996,67.156,232.835,0,149.996,0z M149.996,59.147c25.031,0,45.326,20.292,45.326,45.325 c0,25.036-20.292,45.328-45.326,45.328s-45.325-20.292-45.325-45.328C104.671,79.439,124.965,59.147,149.996,59.147z M168.692,212.557h-0.001v16.41v2.028h-18.264h-0.864H83.86c0-44.674,24.302-60.571,40.245-74.843 c7.724,4.15,16.532,6.531,25.892,6.601c9.358-0.07,18.168-2.451,25.887-6.601c7.143,6.393,15.953,13.121,23.511,22.606h-7.275 v10.374v13.051h-13.054h-10.374V212.557z M218.902,228.967v23.425h-16.41v-23.425h-23.428v-16.41h23.428v-23.425H218.9v23.425 h23.423v16.41H218.902z"/></g>';
-var btnExcelOrg = '<g data-action="excel_org" class="btn" transform="matrix(0.14,0,0,0.14,50,0)"><rect style="opacity:0" x="0" y="0" height="300" width="300" /><path fill="#686868" d="M149.996,0C67.157,0,0.001,67.161,0.001,149.997S67.157,300,149.996,300s150.003-67.163,150.003-150.003 S232.835,0,149.996,0z M221.302,107.945l-14.247,14.247l-29.001-28.999l-11.002,11.002l29.001,29.001l-71.132,71.126 l-28.999-28.996L84.92,186.328l28.999,28.999l-7.088,7.088l-0.135-0.135c-0.786,1.294-2.064,2.238-3.582,2.575l-27.043,6.03 c-0.405,0.091-0.817,0.135-1.224,0.135c-1.476,0-2.91-0.581-3.973-1.647c-1.364-1.359-1.932-3.322-1.512-5.203l6.027-27.035 c0.34-1.517,1.286-2.798,2.578-3.582l-0.137-0.137L192.3,78.941c1.678-1.675,4.404-1.675,6.082,0.005l22.922,22.917 C222.982,103.541,222.982,106.267,221.302,107.945z"/></g>';
-var btnExcelPerson = '<g data-action="excel_person" class="btn" transform="matrix(0.14,0,0,0.14,50,0)"><rect style="opacity:0" x="0" y="0" height="300" width="300" /><path fill="#686868" d="M149.996,0C67.157,0,0.001,67.161,0.001,149.997S67.157,300,149.996,300s150.003-67.163,150.003-150.003 S232.835,0,149.996,0z M221.302,107.945l-14.247,14.247l-29.001-28.999l-11.002,11.002l29.001,29.001l-71.132,71.126 l-28.999-28.996L84.92,186.328l28.999,28.999l-7.088,7.088l-0.135-0.135c-0.786,1.294-2.064,2.238-3.582,2.575l-27.043,6.03 c-0.405,0.091-0.817,0.135-1.224,0.135c-1.476,0-2.91-0.581-3.973-1.647c-1.364-1.359-1.932-3.322-1.512-5.203l6.027-27.035 c0.34-1.517,1.286-2.798,2.578-3.582l-0.137-0.137L192.3,78.941c1.678-1.675,4.404-1.675,6.082,0.005l22.922,22.917 C222.982,103.541,222.982,106.267,221.302,107.945z"/></g>';
+<script type="text/template" id="person-template">
+<%
+var col = "blue"
+var ttt = ""
+var HHmm = function(str){
+return str.split(":").slice(0,2).join(":")
+}
+if(typeof data.tag != "undefined") {
+	col = (data.tag == "in") ? "lightgreen" : 
+				(data.tag == "out") ? "orange" : 
+				(data.tag == "absent") ? "lightteal" : "orange";
+	ttt = (data.tag == "in") ? ("В офисе - вход: "+HHmm(data.enter)        ) : 
+				(data.tag == "out") ? ("Вне офиса - вход: "+HHmm(data.enter) +" выход: " +HHmm(data.exit) ) : 
+				(data.tag == "absent") ? "Отсутствует" : null;
+}			
 
-getOrgChart.themes.ula.box += '<g transform="matrix(1,0,0,1,350,10)">' + btnDiag + btnExcelPerson + '</g>';
-getOrgChart.themes.ola.box += '<g transform="matrix(1,0,0,1,150,10)">' + btnExcelOrg + '</g>';
+
+%>
+<g data-node-id="<%=id%>" id="<%=id%>" class="get-level-<%=level%> get-<%=col%>" transform="matrix(1,0,0,1,
+<%= _z2 == null ? x : _z2 %>
+,<%= _z3 == null ? y : _z3 %>)">
+<title><%=ttt%></title>
+<rect  x="0" y="0" height="220" width="500" rx="10" ry="10" class="get-box" />
+<g transform="matrix(1,0,0,1,350,10)">
+<g data-action="diag" class="btn" transform="matrix(0.14,0,0,0.14,100,0)" 
+onclick="window.open('hist.html?id=<%=id%>', 'window','width=660,height=360,top=50,left=0,resizable=no,scrollbars=no,toolbar=no,menubar=no,location=no,directories=no,status=no')"
+><rect style="opacity:0" x="0" y="0" height="300" width="300" /><path  fill="#686868" d="M149.996,0C67.157,0,0.001,67.158,0.001,149.997c0,82.837,67.156,150,149.995,150s150-67.163,150-150 C299.996,67.156,232.835,0,149.996,0z M149.996,59.147c25.031,0,45.326,20.292,45.326,45.325 c0,25.036-20.292,45.328-45.326,45.328s-45.325-20.292-45.325-45.328C104.671,79.439,124.965,59.147,149.996,59.147z M168.692,212.557h-0.001v16.41v2.028h-18.264h-0.864H83.86c0-44.674,24.302-60.571,40.245-74.843 c7.724,4.15,16.532,6.531,25.892,6.601c9.358-0.07,18.168-2.451,25.887-6.601c7.143,6.393,15.953,13.121,23.511,22.606h-7.275 v10.374v13.051h-13.054h-10.374V212.557z M218.902,228.967v23.425h-16.41v-23.425h-23.428v-16.41h23.428v-23.425H218.9v23.425 h23.423v16.41H218.902z"/></g>
+<g data-action="excel_person" class="btn" transform="matrix(0.14,0,0,0.14,50,0)"
+onclick="window.open('excel.html?id=<%=id%>', 'window','width=660,height=360,top=50,left=0,resizable=no,scrollbars=no,toolbar=no,menubar=no,location=no,directories=no,status=no')"
+><rect style="opacity:0" x="0" y="0" height="300" width="300" /><path fill="#686868" d="M149.996,0C67.157,0,0.001,67.161,0.001,149.997S67.157,300,149.996,300s150.003-67.163,150.003-150.003 S232.835,0,149.996,0z M221.302,107.945l-14.247,14.247l-29.001-28.999l-11.002,11.002l29.001,29.001l-71.132,71.126 l-28.999-28.996L84.92,186.328l28.999,28.999l-7.088,7.088l-0.135-0.135c-0.786,1.294-2.064,2.238-3.582,2.575l-27.043,6.03 c-0.405,0.091-0.817,0.135-1.224,0.135c-1.476,0-2.91-0.581-3.973-1.647c-1.364-1.359-1.932-3.322-1.512-5.203l6.027-27.035 c0.34-1.517,1.286-2.798,2.578-3.582l-0.137-0.137L192.3,78.941c1.678-1.675,4.404-1.675,6.082,0.005l22.922,22.917 C222.982,103.541,222.982,106.267,221.302,107.945z"/></g>
+</g>
+<text class="get-text get-text-0" x="330" y="140"><%=data.name%></text>
+<text class="get-text get-text-1" x="260" y="180"><%=data.mlname%></text>
+<%
+var q = getHead(data.title, 31)
+console.log("TEMPLATE: "+data.name);
+%>
+<text class="get-text get-text-2" x="260" y="210"><%=q.head%></text>
+<text class="get-text get-text-3" width="290" x="290" y="35"><%=data.mob%></text>
+<text class="get-text get-text-4" width="290" x="210" y="55"><%=data.corp%></text>
+<text class="get-text get-text-4" width="290" x="210" y="75"><%=data.mail%></text>
+<% if(data.img) { %>
+<image xlink:href="../userimg/<%=data.img%>.jpg"  x="20" y="-20" height="165" preserveAspectRatio="xMidYMid slice" width="165"/>
+<% } %>
+</g>
+</script>
+<script type="text/template" id="org-template">
+<g data-node-id="<%=id%>" class="get-level-<%=level%>" transform="matrix(1,0,0,1,
+<%= _z2 == null ? x : _z2 %>
+,<%= _z3 == null ? y : _z3 %>)">
+
+<rect  x="0" y="0" height="220" width="500" rx="10" ry="10" class="get-box" />
+<g transform="matrix(1,0,0,1,400,10)">
+<g data-action="excel_org" class="btn" transform="matrix(0.14,0,0,0.14,50,0)"
+onclick="window.open('excel.html?pid=<%=id%>', 'window','width=660,height=360,top=50,left=0,resizable=no,scrollbars=no,toolbar=no,menubar=no,location=no,directories=no,status=no')"
+><rect style="opacity:0" x="0" y="0" height="300" width="300" /><path fill="#686868" d="M149.996,0C67.157,0,0.001,67.161,0.001,149.997S67.157,300,149.996,300s150.003-67.163,150.003-150.003 S232.835,0,149.996,0z M221.302,107.945l-14.247,14.247l-29.001-28.999l-11.002,11.002l29.001,29.001l-71.132,71.126 l-28.999-28.996L84.92,186.328l28.999,28.999l-7.088,7.088l-0.135-0.135c-0.786,1.294-2.064,2.238-3.582,2.575l-27.043,6.03 c-0.405,0.091-0.817,0.135-1.224,0.135c-1.476,0-2.91-0.581-3.973-1.647c-1.364-1.359-1.932-3.322-1.512-5.203l6.027-27.035 c0.34-1.517,1.286-2.798,2.578-3.582l-0.137-0.137L192.3,78.941c1.678-1.675,4.404-1.675,6.082,0.005l22.922,22.917 C222.982,103.541,222.982,106.267,221.302,107.945z"/></g>
+</g>
+<%
+var q = getHead(data.name, 10)
+var qq = getHead(q.tail, 22)
+var qqq = getHead(qq.tail, 22)
+%>
+
+<text class="get-text get-text-0" x="270" y="55"><%=q.head%></text>
+<text class="get-text get-text-1" x="270" y="90"><%=qq.head%></text>
+<text class="get-text get-text-1" x="270" y="125"><%=qqq.head%></text>
+<text class="get-text get-text-2" width="0" x="290" y="152"><%=qqq.tail%></text>
+<% if(data.img) { 
+var u = _.find(dataSource, function(num){return num.id == data.img;});
+var uio = u.mlname.split(" ");
+io = uio[0] ? uio[0][0] : "";
+io += uio[1] ? uio[1][0] : "";
+%>
+<text class="get-text get-text-4" x="120" y="200">Руководитель: <%=u.name%> <%=io%></text>
+<clipPath id="getMonicaClip"><circle cx="60" cy="165" r="50" /></clipPath><image preserveAspectRatio="xMidYMid slice" clip-path="url(#getMonicaClip)" xlink:href="../userimg/<%=u.img%>.jpg" x="10" y="115" height="100" width="100" style="cursor:grab;" onclick="chart.highlightNode('<%=u.id%>')"/>
+<% } %>
+</g>
+</script>
+
+<script>
+function kaka(){
+document.getElementById("1077144").classList.remove("get-orange"); 
+document.getElementById("1077144").classList.add("get-blue");
+}
+
+var tmpl = {
+  person:  _.template(document.getElementById('person-template').innerHTML),
+  org: _.template(document.getElementById('org-template').innerHTML)
+}  
+
+getOrgChart.node.prototype.draw = function(a){
+	var res = tmpl[this.data.type](_.extend({},this,a));
+	return [res];
+}
+function getHead(str, maxlen, head, tail){
+	if(!str) return {head: "", tail : ""};
+	instr = str.split(" ");
+    for (var l = 0; l < instr.length; l++) {
+		head = instr.slice(0, instr.length - l).join(" ");
+        if (head.length <= maxlen)
+            return {head: head, 
+				tail : instr.slice(instr.length- l, instr.length).join(" ")};        
+    }
+    if (instr.length > 0)
+		return {head: instr[0], tail : instr.slice(1, instr.length).join(" ")};
+}
 
 var xhttp = window.XMLHttpRequest ? new XMLHttpRequest() : new ActiveXObject("Microsoft.XMLHTTP");
     xhttp.onreadystatechange = function () {
-        if (xhttp.readyState === 4 && xhttp.status === 200) {
-            makeChart(JSON.parse(xhttp.responseText));
-            //result = (xhttp.responseText);
-        } else {
-            result = {
-                error: 'status="' + xhttp.statusText + ' (' + xhttp.status + ')", state="' + xhttp.readyState + '"'
-            };
-        }
+        if (xhttp.readyState === 4 && xhttp.status === 200) 
+            setParsecStatus(JSON.parse(xhttp.responseText));
     };
-    xhttp.open("GET", "orgdata.aspx", true);
-    xhttp.send();
-	
-var renderNodeHandle = function(sender, args) {
-			var d = args.node.data;
-			if(d.tag == "org") return;
-			var t = (d.tag == "in") ? ("В офисе - вход: "+d.enter) : 
-					  (d.tag == "out") ? ("Вне офиса - вход: "+d.enter +" выход: " +d.exit) : 
-					  (d.tag == "absent") ? "Отсутствует" : null;
-        	args.content[1] = args.content[1].replace("[tooltip]", t);
-}
+xhttp.open("GET", "parsecStatus.aspx", true);
+xhttp.send();
 
-function getNodeByClickedBtn(el) {
-    while (el.parentNode) {
-        el = el.parentNode;
-        if (el.getAttribute("data-node-id"))
-            return el;
-    }
-    return null;
-}
-
-var initBtn = function(){
-    var btns = document.getElementsByClassName("btn");
-    for (var i = 0; i < btns.length; i++) {
-        btns[i].addEventListener("click", function () {                  
-            var nodeElement = getNodeByClickedBtn(this);
-            var id = nodeElement.getAttribute("data-node-id");
-			var action = this.getAttribute("data-action");
-            switch (action) {
-               case "diag":
-                 window.open('hist.html?id='+ id, 'window','width=660,height=360,top=50,left=0,resizable=no,scrollbars=no,toolbar=no,menubar=no,location=no,directories=no,status=no');							
-                 break;
-               case "excel_org":
-			     window.open('excel.html?pid='+ id, 'window','width=660,height=360,top=50,left=0,resizable=no,scrollbars=no,toolbar=no,menubar=no,location=no,directories=no,status=no');							
-				 break;		
-               case "excel_person":
-			     window.open('excel.html?id='+ id, 'window','width=660,height=360,top=50,left=0,resizable=no,scrollbars=no,toolbar=no,menubar=no,location=no,directories=no,status=no');							
-				 break;		
-				 
-			}				 
-        });
-    }
+function setParsecStatus(state){
+  for(var id in state){
+	_.extend(chart.nodes[id].data, state[id])
+  }
 }
 	
 var config = {
@@ -103,31 +161,17 @@ var config = {
 	linkType: "M",
     enableEdit: false,
     enableDetailsView: false,
-    primaryFields: ["name", "title", "mob", "corp","mail"],
+    primaryFields: ["name","mlname", "title", "mob", "corp","mail"],
     photoFields: ["img"],	
-	searchFields: ["name"],
-    layout: getOrgChart.MIXED_HIERARCHY_RIGHT_LINKS,
+    layout: getOrgChart.MIXED_HIERARCHY_RIGHT_LINKS
 //    dataSource: {},
 //	customize: {},
-    renderNodeEvent: renderNodeHandle,
-    updatedEvent: initBtn
+//    renderNodeEvent: renderNodeHandle,
+//    updatedEvent: initBtn
 
 };
-function makeChart(cdata) {
-		var c = {}, d;
-		for(var i=0; i<cdata.length; i++){
-			d = cdata[i];
-			c[d.id] = (d.tag == "org") ? {theme: "ola"} : 
-					  (d.tag == "in") ? {color : "lightgreen"} : 
-					  (d.tag == "out") ? {color : "orange"} : 
-					  (d.tag == "absent") ? {color : "lightteal"} : null;
-		}
-		config.customize = c;
-        config.dataSource = cdata;
-        var chart = new getOrgChart(document.getElementById("tree"), config);
-		initBtn();
-}	
-	
+config.dataSource = orgData;
+var chart = new getOrgChart(document.getElementById("tree"), config);
 
 </script>
 </body>

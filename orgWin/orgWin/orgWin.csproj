@@ -84,7 +84,8 @@
     <Content Include="css\tableexport.min.css" />
     <Content Include="excel.html" />
     <Content Include="getHistory2Excel.aspx" />
-    <Content Include="getOrgDataWithParsecStatus.aspx" />
+    <Content Include="orgData.aspx" />
+    <Content Include="parsecStatus.aspx" />
     <Content Include="Global.asax" />
     <Content Include="globalOrgData.aspx" />
     <Content Include="hist.html" />
@@ -100,7 +101,6 @@
     <Content Include="js\tableexport.js" />
     <Content Include="js\tableexport.min.js" />
     <Content Include="js\xlsx.core.min.js" />
-    <Content Include="orgdata.aspx" />
     <Content Include="packages.config" />
     <None Include="Properties\PublishProfiles\OrgChart.pubxml" />
     <None Include="Properties\PublishProfiles\orgWin.pubxml" />
@@ -112,12 +112,10 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="fromParsec.aspx" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
-    <Content Include="test.aspx" />
     <Content Include="Web References\IntegrationWebService\AccessGroup.datasource">
       <DependentUpon>Reference.map</DependentUpon>
     </Content>
@@ -207,15 +205,7 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ClientState.cs" />
     <Compile Include="EventHistoryFields.cs" />
-    <Compile Include="fromParsec.aspx.cs">
-      <DependentUpon>fromParsec.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="fromParsec.aspx.designer.cs">
-      <DependentUpon>fromParsec.aspx</DependentUpon>
-    </Compile>
     <Compile Include="getHistory2Excel.aspx.cs">
       <DependentUpon>getHistory2Excel.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
@@ -223,12 +213,19 @@
     <Compile Include="getHistory2Excel.aspx.designer.cs">
       <DependentUpon>getHistory2Excel.aspx</DependentUpon>
     </Compile>
-    <Compile Include="getOrgDataWithParsecStatus.aspx.cs">
-      <DependentUpon>getOrgDataWithParsecStatus.aspx</DependentUpon>
+    <Compile Include="orgData.aspx.cs">
+      <DependentUpon>orgData.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="getOrgDataWithParsecStatus.aspx.designer.cs">
-      <DependentUpon>getOrgDataWithParsecStatus.aspx</DependentUpon>
+    <Compile Include="orgData.aspx.designer.cs">
+      <DependentUpon>orgData.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="parsecStatus.aspx.cs">
+      <DependentUpon>parsecStatus.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="parsecStatus.aspx.designer.cs">
+      <DependentUpon>parsecStatus.aspx</DependentUpon>
     </Compile>
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
@@ -247,26 +244,12 @@
     <Compile Include="histdata.aspx.designer.cs">
       <DependentUpon>histdata.aspx</DependentUpon>
     </Compile>
-    <Compile Include="orgdata.aspx.cs">
-      <DependentUpon>orgdata.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="orgdata.aspx.designer.cs">
-      <DependentUpon>orgdata.aspx</DependentUpon>
-    </Compile>
     <Compile Include="orgNode.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Properties\Settings.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>Settings.settings</DependentUpon>
-    </Compile>
-    <Compile Include="test.aspx.cs">
-      <DependentUpon>test.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="test.aspx.designer.cs">
-      <DependentUpon>test.aspx</DependentUpon>
     </Compile>
     <Compile Include="Web References\IntegrationWebService\Reference.cs">
       <AutoGen>True</AutoGen>

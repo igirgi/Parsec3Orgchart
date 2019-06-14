@@ -237,7 +237,7 @@ getOrgChart.prototype._A = function() {
    f.push(g)
   }
  }
- f.push(getOrgChart.buttons.draw());
+// f.push(getOrgChart.buttons.draw());
  f.push(getOrgChart.CLOSE_SVG);
  var a = f.join("");
  return a
@@ -878,7 +878,7 @@ getOrgChart.RO_RIGHT_PARENT_TOP = 6;
 getOrgChart.RO_LEFT_PARENT_TOP = 7;
 getOrgChart.OPEN_SVG = '<svg xmlns="http://www.w3.org/2000/svg" version="1.1" viewBox="[viewBox]"><defs>[defs]</defs><g>';
 getOrgChart.CLOSE_SVG = "</svg>";
-getOrgChart.OPEN_NODE = '<g data-node-id="[data-node-id]" class="get-level-[level] [nodeCssClass]" transform="matrix(1,0,0,1,[x],[y])">';
+getOrgChart.OPEN_NODE = '<g data-node-id="[data-node-id]" id="[data-node-id]" class="get-level-[level] [nodeCssClass]" transform="matrix(1,0,0,1,[x],[y])"><title>[tooltip]</title>';
 getOrgChart.CLOSE_NODE = "</g>";
 getOrgChart.NOT_DEFINED = 0;
 getOrgChart.COLLAPSED = 1;
@@ -1279,10 +1279,11 @@ getOrgChart.node.prototype._Z = function(a) {
     }
    }
   }
+ }
   if (a.expandToLevel && this.displayChildren == null) {
    d.push(getOrgChart.buttons.expColl.replace("[display]", this.collapsed == getOrgChart.EXPANDED ? "none" : "block").replace(/\[xa]/g, (p - e.expandCollapseBtnRadius)).replace(/\[ya]/g, (u - e.expandCollapseBtnRadius)).replace(/\[start]/g, ((e.expandCollapseBtnRadius * 2) / 6)).replace(/\[middle]/g, (e.expandCollapseBtnRadius)).replace(/\[end]/g, ((e.expandCollapseBtnRadius * 2 / 6) * 5)).replace(/\[id]/g, this.id))
   }
- }
+ 
  return d.join("")
 };
 getOrgChart.node.prototype._W = function(c) {
@@ -1476,8 +1477,10 @@ getOrgChart.node.prototype.draw = function(a) {
  }
  var d = f + e;
  var l = b ? m.textPoints : m.textPointsNoImage;
- h.push(getOrgChart.OPEN_NODE.replace("[data-node-id]", this.id).replace("[x]", this._z2 == null ? this.x : this._z2).replace("[y]", this._z3 == null ? this.y : this._z3).replace("[level]", this.level).replace("[nodeCssClass]", d));
- for (themeProperty in m) {
+ //h.push(getOrgChart.OPEN_NODE.replace("[data-node-id]", this.id).replace("[x]", this._z2 == null ? this.x : this._z2).replace("[y]", this._z3 == null ? this.y : this._z3).replace("[level]", this.level).replace("[nodeCssClass]", d));
+ h.push(getOrgChart.OPEN_NODE.replace("[data-node-id]", this.id).replace("[data-node-id]", this.id).replace("[x]", this._z2 == null ? this.x : this._z2).replace("[y]", this._z3 == null ? this.y : this._z3).replace("[level]", this.level).replace("[nodeCssClass]", d));
+ 
+  for (themeProperty in m) {
   switch (themeProperty) {
    case "image":
     if (b) {
@@ -1506,6 +1509,7 @@ getOrgChart.node.prototype.draw = function(a) {
  h.push(getOrgChart.CLOSE_NODE);
  return h
 };
+	
 if (!getOrgChart) {
  var getOrgChart = {}
 }

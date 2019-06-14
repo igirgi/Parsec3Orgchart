@@ -10,16 +10,20 @@ using orgWin.IntegrationWebService;
 
 namespace orgWin
 {
-    public partial class getOrgDataWithParsecStatus : System.Web.UI.Page
+    public partial class parsecStatus : System.Web.UI.Page
     {
+        public class pNode
+        {
+            public string tag;
+            public string enter;
+            public string exit;
+        }
         protected void Page_Load(object sender, EventArgs e)
         {
-            Dictionary<Guid, orgNode> nodes = (Dictionary<Guid, orgNode>)HttpContext.Current.Application["orgdata"];
-            DateTime lastRenew = (DateTime)HttpContext.Current.Application["orgdatatime"];
-//если обновлялось меньше минуты назад - отдать закэшированное
-            if (nodes != null && lastRenew != null && DateTime.Now - lastRenew < new TimeSpan(0, 0, 100)) goto notExpired;
-
-//иначе обновить
+            Guid[] personIds = ((List<Guid>) HttpContext.Current.Application["personIds"]).ToArray();
+            Dictionary<Guid, pNode> nodes = new Dictionary<Guid, pNode>(personIds.Length);
+            for (int g = 0; g < personIds.Length; g++)
+                nodes.Add(personIds[g], new pNode());
             IntegrationService igServ = new IntegrationService();
             string parsecDomain = ConfigurationManager.AppSettings.Get("domain");
             string parsecUser = ConfigurationManager.AppSettings.Get("user");
@@ -34,7 +38,8 @@ namespace orgWin
             param.EventsWithoutUser = false;
             param.TransactionTypes = new uint[] { 590144, 590152, 65867, 590165, 590145, 590153, 65866, 590166 };
             param.MaxResultSize = (10000);
-            param.Organizations = ((List<orgNode>)HttpContext.Current.Application["orglist"]).Select(x => x.id).ToArray();
+            param.Organizations = ((List<Guid>)HttpContext.Current.Application["orgIds"]).ToArray();
+            param.Users = ((List<Guid>)HttpContext.Current.Application["personIds"]).ToArray();
             List<Guid> fields = new List<Guid>();
             fields.Add(EventHistoryFields.EVENT_TIME);
             fields.Add(EventHistoryFields.EVENT_CODE_HEX);
@@ -46,7 +51,7 @@ namespace orgWin
             if (res.Result != 0){Response.Write("{\"err\":\"Can not open session to Parsec\"}");return;}
             Guid sessionID = res.Value.SessionID;
 //сессия истории с Парсеком
-            GuidResult res1 = igServ.OpenEventHistorySession(ClientState.SessionID, param);
+            GuidResult res1 = igServ.OpenEventHistorySession(sessionID, param);
             if (res1.Result != 0) {Response.Write("{\"err\":\"Can not OpenEventHistorySession in Parsec\"}"); return; }
 //получить события дня
             events = igServ.GetEventHistoryResult(sessionID, res1.Value /*сессия истории*/, fields.ToArray(), 0, 10000);
@@ -79,7 +84,7 @@ namespace orgWin
                         {
                             Guid nodeid = new Guid(events[ii].Values[2].ToString());
                             if (nodes.ContainsKey(nodeid))
-                                nodes[nodeid].exit = "";
+                                nodes[nodeid].exit = null;
                         }
                         break;
                 }
@@ -101,11 +106,9 @@ namespace orgWin
                         }
                         break;
                 }
-            }            
-            // считаем опоздания
-            var proposedEnter = DateTime.Parse("9:10:00");
-            
-            List<orgNode> pl = (List<orgNode>)HttpContext.Current.Application["personlist"];             
+            }
+
+            List<pNode> pl = nodes.Values.ToList<pNode>();
             DateTime vhod, vihod;
             for (int k = 0; k < pl.Count; k++)
             {
@@ -124,13 +127,11 @@ namespace orgWin
                     pl[k].tag = "out";
                 }
             }
-//            HttpContext.Current.Application["orgdata"] = nodes;
-            HttpContext.Current.Application["orgdatatime"] = DateTime.Now;
 
-notExpired:
+
             Response.Clear();
             Response.ContentType = "application/json; charset=utf-8";
-            Response.Write(JsonConvert.SerializeObject(nodes.Values.ToList(),
+            Response.Write(JsonConvert.SerializeObject(nodes,
                 Newtonsoft.Json.Formatting.None,
                             new JsonSerializerSettings
                             {

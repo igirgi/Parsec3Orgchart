@@ -1,4 +1,4 @@
-﻿<%@ Page Language="C#" AutoEventWireup="true" CodeBehind="test.aspx.cs" Inherits="orgWin.test" %>
+﻿<%@ Page Language="C#" AutoEventWireup="true" CodeBehind="parsecStatus.aspx.cs" Inherits="orgWin.parsecStatus" %>
 
 <!DOCTYPE html>
 

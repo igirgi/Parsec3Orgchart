@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.IO;
+using System.Text;
 using System.Web;
 using System.Configuration;
 using System.Collections.Specialized;
@@ -17,8 +18,8 @@ namespace orgWin
         public static Dictionary<Guid, orgNode> makeOrgDataAndUserimgs(string appPath)
         {
             Dictionary<Guid, orgNode> nodes = new Dictionary<Guid, orgNode>();//подназорные и подразделения вперемешку
-            List<orgNode> orgs = new List<orgNode>(); //список ссылок на подразделения
-            List<orgNode> persons = new List<orgNode>(); //список ссылок на поднадзорных
+            List<Guid> orgs = new List<Guid>(); //список Guid подразделен
+            List<Guid> persons = new List<Guid>(); //список Guid поднадзорных
 
             IntegrationService iServ = new IntegrationService();
 
@@ -31,7 +32,7 @@ namespace orgWin
             Guid orgRoot = new Guid(orgRootString);
 
             SessionResult res = iServ.OpenSession(apidomain, apiuser, apipassword);
-            if (res.Result != ClientState.Result_Success)
+            if (res.Result != 0)
                 return null;
 
             Guid sessionID = res.Value.SessionID;
@@ -55,7 +56,7 @@ namespace orgWin
                     node.pid = personItem.ORG_ID;
                     node.name = personItem.LAST_NAME.Trim();
                     node.mlname = (personItem.FIRST_NAME ?? "") + " " + (personItem.MIDDLE_NAME ?? "");
-                    node.tag = "person";
+                    node.type = "person";
                     ExtraFieldValue[] extraVals = iServ.GetPersonExtraFieldValues(sessionID, node.id);
                     for (int k = extraVals.Length - 1; k >= 0; k--)
                     {
@@ -91,9 +92,11 @@ namespace orgWin
                                 appPath + "userimg/" + pPhoto.ID.ToString() + ".jpg",
                                 ImageFormat.Jpeg
                             );
+                            node.img = node.id;
                         }
 
                     nodes.Add(node.id, node);
+                    persons.Add(node.id);
                     continue;
                 }
                 OrgUnit orgItem = hierarhyList[i] as OrgUnit;
@@ -102,21 +105,49 @@ namespace orgWin
                     node.id = orgItem.ID;
                     node.pid = orgItem.PARENT_ID;
                     node.name = orgItem.NAME;
+//                    string[] orgName = orgItem.NAME.Split(" ".ToCharArray());
+//                    node.name = orgName[0];
+//                    split2triple(orgName.Skip(1).ToArray(), 22, 15,  ref node.mlname, ref node.title, ref node.mob);                    
                     var boss = nodes.Values.FirstOrDefault(n => n.name.Equals(orgItem.DESC.Trim()));
-                    node.boss = boss != null ? boss.id.ToString() : ("->"+orgItem.DESC.Trim()+"<-");
-                    node.tag = "org";                    
+                    if(boss != null) node.img =  boss.id;
+                    node.type = "org";                    
                     nodes.Add(orgItem.ID, node);
+                    orgs.Add(node.id);
                 }
             }
-            orgs = nodes.Values.Where(p => p.tag.Equals("org")).ToList<orgNode>();
-            persons = nodes.Values.Where(p => p.tag.Equals("person")).ToList<orgNode>();
 
             iServ.CloseSession(sessionID);
             HttpContext.Current.Application["orgdata"] = nodes;
-            HttpContext.Current.Application["orglist"] = orgs;
-            HttpContext.Current.Application["personlist"] = persons;
-            HttpContext.Current.Application["orgdatatime"] = DateTime.Now - new TimeSpan(0, 2, 0);
+            HttpContext.Current.Application["orgIds"] = orgs;
+            HttpContext.Current.Application["personIds"] = persons;
             return nodes;
+        }
+        private static void getHead(string[] instr, int headLength, ref string head,  ref string tail)
+        {
+            for (int l = 0; l < instr.Length; l++)
+            {
+                head = String.Join(" ", instr.Take(instr.Length - l).ToArray());
+                if (head.Length <= headLength)
+                {
+                    tail = String.Join(" ", instr.Skip(instr.Length - l).ToArray());
+                    return;
+                }
+            }
+            if (instr.Length > 0)
+            {
+                head = instr.Take(1).ToArray()[0];
+                tail = String.Join(" ", instr.Skip(1).ToArray());
+            }
+        }
+        protected static void split2triple(string[] instr, int headLength, int middleLength, ref string head, ref string middle, ref string tail)
+        {
+            string tmp = "";
+            getHead(instr, headLength, ref head, ref tmp);
+            if (tmp.Length > middleLength)
+                getHead(tmp.Split(" ".ToCharArray()), middleLength, ref middle, ref tail);
+            else
+                middle = tmp;
+            return;
         }
         protected void Page_Load(object sender, EventArgs e)
         {

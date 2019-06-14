@@ -1,4 +1,4 @@
-﻿<%@ Page Language="C#" AutoEventWireup="true" CodeBehind="orgdata.aspx.cs" Inherits="orgWin.orgdata" %>
+﻿<%@ Page Language="C#" AutoEventWireup="true" CodeBehind="orgData.aspx.cs" Inherits="orgWin.orgData" %>
 
 <!DOCTYPE html>
 

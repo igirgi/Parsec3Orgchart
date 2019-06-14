@@ -12,7 +12,9 @@ namespace orgWin
 
         protected void Application_Start(object sender, EventArgs e)
         {            
-            globalOrgData.makeOrgDataAndUserimgs(HttpRuntime.AppDomainAppPath); 
+            globalOrgData.saveOrgChart(
+                globalOrgData.makeOrgDataAndUserimgs(HttpRuntime.AppDomainAppPath).Values.ToList()
+            );
         }
 
         protected void Session_Start(object sender, EventArgs e)

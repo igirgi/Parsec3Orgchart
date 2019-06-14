@@ -150,7 +150,16 @@ xhttp.send();
 function setParsecStatus(state){
   for(var id in state){
 	_.extend(chart.nodes[id].data, state[id])
-  }
+	var no = document.getElementById(id);
+	if(no){
+		var newClass =  "get-"+((state[id].tag == "in") ? "lightgreen" : 
+				(state[id].tag == "out") ? "orange" : 
+				(state[id].tag == "absent") ? "lightteal" : "orange");
+		var oldClass = no.classList.item(1);		
+		no.classList.remove(oldClass);
+		no.classList.add(newClass);
+	}
+  }  
 }
 	
 var config = {

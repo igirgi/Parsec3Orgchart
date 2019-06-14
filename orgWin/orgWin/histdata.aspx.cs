@@ -21,7 +21,7 @@ namespace orgWin
             using (SqlConnection sqlCon = new SqlConnection(connectionString))
             {
                 sqlCon.Open();
-                string sqlc = "select top (10000) date as d, opozd as o, zader as z from ParsecHistory where id=@id order by date for JSON auto";
+                string sqlc = "select top (10000) sysdate as d, opozd as o, zader as z from ParsecOrgHistory where id=@id order by date for JSON auto";
                 using (SqlCommand sqlCmd = new SqlCommand { CommandText = sqlc, Connection = sqlCon })
                 {
                     sqlCmd.Parameters.AddWithValue("@id", id);

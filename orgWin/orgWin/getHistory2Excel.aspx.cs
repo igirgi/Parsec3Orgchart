@@ -30,11 +30,11 @@ namespace orgWin
     FROM orgChart
     WHERE pid = @pid
 ), tree AS (
-    SELECT x.pid, x.id, (select name from orgChart  where id = x.pid ) 'department', x.name, x.tag
+    SELECT x.pid, x.id, (select name from orgChart  where id = x.pid ) 'department', x.name
     FROM orgChart x	
     INNER JOIN parent ON x.pid = parent.pid
     UNION ALL
-    SELECT y.pid, y.id, (select name from orgChart  where id = y.pid ) 'department', y.name, y.tag
+    SELECT y.pid, y.id, (select name from orgChart  where id = y.pid ) 'department', y.name
     FROM orgChart y
     INNER JOIN tree t ON y.pid = t.id
 )
@@ -46,10 +46,10 @@ SELECT c.department
       ,h.eventscount
       ,h.totalworktime
       ,h.totalouttime
-from (SELECT  DISTINCT pid, id, department, name, tag FROM tree 
+from (SELECT  DISTINCT pid, id, department, name FROM tree 
 ) c 
-inner join Parsec2ExcelHistory h on h.id = c.id and h.date_ >= @from and h.date_ <= @to
-order by c.pid asc, c.name asc, h.date_ asc for JSON auto"
+inner join ParsecOrgHistory h on h.id = c.id and h.sysdate >= @from and h.sysdate <= @to
+order by c.pid asc, c.name asc, h.sysdate asc for JSON auto"
                     :
 @"SELECT c.department
       ,c.name
@@ -60,8 +60,8 @@ order by c.pid asc, c.name asc, h.date_ asc for JSON auto"
       ,h.totalworktime
       ,h.totalouttime
 from (select id, name, (select name from orgChart  where id = o.pid ) department from orgChart o where id = @id) c 
-inner join Parsec2ExcelHistory h on h.id = c.id and h.date_ >= @from and h.date_ <= @to
-order by c.name asc, h.date_ asc for JSON auto";
+inner join ParsecOrgHistory h on h.id = c.id and h.sysdate >= @from and h.sysdate <= @to
+order by c.name asc, h.sysdate asc for JSON auto";
 
                 using (SqlCommand sqlCmd = new SqlCommand { CommandText = sqlc, Connection = sqlCon })
                 {

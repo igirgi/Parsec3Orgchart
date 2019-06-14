@@ -82,9 +82,20 @@
 }
 
 .get-org-chart .get-text-0 {
-	font-size: 30px
+	font-size: 45px;
+	text-anchor: middle;
 }
-
+.get-org-chart .get-text-1 {
+	font-size: 40px;
+	text-anchor: middle;
+}
+.get-org-chart .get-text-2 {
+	font-size: 30px;
+	text-anchor: middle;
+}
+.get-org-chart .get-text-3 {
+	text-anchor: middle;
+}
 .get-org-chart .get-oc-tb {
 	z-index: 1
 }
@@ -112,7 +123,7 @@
 }
 
 .get-org-chart .get-left-icon {
-	background: url(../img/graphics.png) -182px 0;
+	background: url(graphics.png) -182px 0;
 	width: 26px;
 	height: 26px;
 	background-repeat: no-repeat
@@ -132,7 +143,7 @@
 }
 
 .get-org-chart .get-right-icon {
-	background: url(../img/graphics.png) -130px 0;
+	background: url(graphics.png) -130px 0;
 	width: 26px;
 	height: 26px;
 	background-repeat: no-repeat
@@ -151,7 +162,7 @@
 }
 
 .get-org-chart .get-up-icon {
-	background: url(../img/graphics.png) -52px 0;
+	background: url(graphics.png) -52px 0;
 	width: 26px;
 	height: 26px;
 	background-repeat: no-repeat;
@@ -171,7 +182,7 @@
 }
 
 .get-org-chart .get-down-icon {
-	background: url(../img/graphics.png) -234px 0;
+	background: url(graphics.png) -234px 0;
 	width: 26px;
 	height: 26px;
 	background-repeat: no-repeat;
@@ -179,42 +190,42 @@
 }
 
 .get-org-chart .get-oc-tb a.get-plus {
-	background: url(../img/graphics.png) -26px 0;
+	background: url(graphics.png) -26px 0;
 	float: right;
 	margin: 11px 10px 0 3px;
 	border: 0
 }
 
 .get-org-chart .get-oc-tb a.get-minus {
-	background: url(../img/graphics.png) 0 0;
+	background: url(graphics.png) 0 0;
 	float: right;
 	margin: 11px 10px 0 3px
 }
 
 .get-org-chart .get-oc-tb a.get-next {
-	background: url(../img/graphics.png) -104px 0;
+	background: url(graphics.png) -104px 0;
 	margin: 11px 3px 0 3px
 }
 
 .get-org-chart .get-oc-tb a.get-prev {
-	background: url(../img/graphics.png) -156px 0;
+	background: url(graphics.png) -156px 0;
 	margin: 11px 3px 0 3px
 }
 
 .get-org-chart .get-oc-tb a.get-grid-view {
-	background: url(../img/graphics.png) -208px 0;
+	background: url(graphics.png) -208px 0;
 	float: right;
 	margin: 11px 10px 0 3px
 }
 
 .get-org-chart .get-oc-tb a.get-print {
-	background: url(../img/graphics.png) -312px 0;
+	background: url(graphics.png) -312px 0;
 	float: right;
 	margin: 11px 10px 0 3px
 }
 
 .get-org-chart .get-oc-tb a.get-export-to-image {
-	background: url(../img/graphics.png) -338px 0;
+	background: url(graphics.png) -338px 0;
 	float: right;
 	margin: 11px 10px 0 3px
 }
@@ -258,7 +269,7 @@
 }
 
 .get-org-chart .get-oc-tb a.get-prev-page {
-	background: url(../img/graphics.png) -156px 0;
+	background: url(graphics.png) -156px 0;
 	margin: 11px 3px 0 17px;
 	display: inherit
 }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data.SqlClient;
 using System.Linq;
 using System.IO;
 using System.Text;
@@ -20,6 +21,9 @@ namespace orgWin
             Dictionary<Guid, orgNode> nodes = new Dictionary<Guid, orgNode>();//подназорные и подразделения вперемешку
             List<Guid> orgs = new List<Guid>(); //список Guid подразделен
             List<Guid> persons = new List<Guid>(); //список Guid поднадзорных
+            Dictionary<string, string> nameMapping = (ConfigurationManager.GetSection("ParsecMapping") as System.Collections.Hashtable)
+                .Cast<System.Collections.DictionaryEntry>()
+                .ToDictionary(d => (string)d.Key, d => (string)d.Value);
 
             IntegrationService iServ = new IntegrationService();
 
@@ -58,28 +62,13 @@ namespace orgWin
                     node.mlname = (personItem.FIRST_NAME ?? "") + " " + (personItem.MIDDLE_NAME ?? "");
                     node.type = "person";
                     ExtraFieldValue[] extraVals = iServ.GetPersonExtraFieldValues(sessionID, node.id);
+                    //map extraFields from Parsec to orgNode
                     for (int k = extraVals.Length - 1; k >= 0; k--)
                     {
-                        switch (extraNames[extraVals[k].TEMPLATE_ID])
-                        {
-                            case "E-mail":
-                                node.mail = (string)extraVals[k].VALUE;
-                                break;
-                            case "Мобильный телефон":
-                                node.mob = (string)extraVals[k].VALUE;
-                                break;
-                            case "День рождения":
-                                node.birthday = (string)extraVals[k].VALUE;
-                                break;
-                            case "Корпоративный телефон":
-                                node.corp = (string)extraVals[k].VALUE;
-                                break;
-                            case "Должность":
-                                node.title = (string)extraVals[k].VALUE;
-                                break;
-                            default:
-                                break;
-
+                        string extraName = extraNames[extraVals[k].TEMPLATE_ID];
+                        string propname ="";
+                        if (nameMapping.TryGetValue(extraName, out propname)){
+                            node[propname] = (string)extraVals[k].VALUE;                            
                         }
                     }
 
@@ -105,9 +94,6 @@ namespace orgWin
                     node.id = orgItem.ID;
                     node.pid = orgItem.PARENT_ID;
                     node.name = orgItem.NAME;
-//                    string[] orgName = orgItem.NAME.Split(" ".ToCharArray());
-//                    node.name = orgName[0];
-//                    split2triple(orgName.Skip(1).ToArray(), 22, 15,  ref node.mlname, ref node.title, ref node.mob);                    
                     var boss = nodes.Values.FirstOrDefault(n => n.name.Equals(orgItem.DESC.Trim()));
                     if(boss != null) node.img =  boss.id;
                     node.type = "org";                    
@@ -122,36 +108,11 @@ namespace orgWin
             HttpContext.Current.Application["personIds"] = persons;
             return nodes;
         }
-        private static void getHead(string[] instr, int headLength, ref string head,  ref string tail)
-        {
-            for (int l = 0; l < instr.Length; l++)
-            {
-                head = String.Join(" ", instr.Take(instr.Length - l).ToArray());
-                if (head.Length <= headLength)
-                {
-                    tail = String.Join(" ", instr.Skip(instr.Length - l).ToArray());
-                    return;
-                }
-            }
-            if (instr.Length > 0)
-            {
-                head = instr.Take(1).ToArray()[0];
-                tail = String.Join(" ", instr.Skip(1).ToArray());
-            }
-        }
-        protected static void split2triple(string[] instr, int headLength, int middleLength, ref string head, ref string middle, ref string tail)
-        {
-            string tmp = "";
-            getHead(instr, headLength, ref head, ref tmp);
-            if (tmp.Length > middleLength)
-                getHead(tmp.Split(" ".ToCharArray()), middleLength, ref middle, ref tail);
-            else
-                middle = tmp;
-            return;
-        }
         protected void Page_Load(object sender, EventArgs e)
         {
-            var nodes = makeOrgDataAndUserimgs(Request.PhysicalApplicationPath);            
+            var nodes = makeOrgDataAndUserimgs(Request.PhysicalApplicationPath);
+            saveOrgChart(nodes.Values.ToList());
+
             Response.Clear();
             Response.ContentType = "application/json; charset=utf-8";
             Response.Write(JsonConvert.SerializeObject(nodes.Values.ToList(),
@@ -164,5 +125,57 @@ namespace orgWin
             Response.End();
             
         }
+        public static void saveOrgChart(List<orgNode> nodes)
+        {
+            var connectionString = ConfigurationManager.ConnectionStrings["ParsecReport"].ConnectionString;
+            using (SqlConnection sqlCon = new SqlConnection(connectionString))
+            {
+                sqlCon.Open();
+                dropTable(sqlCon);
+                createTable(sqlCon);
+                fillTable(sqlCon, nodes);
+                sqlCon.Close();
+            }
+
+        }
+        static void dropTable(SqlConnection sqlCon)
+        {
+            string sqldrop = "IF OBJECT_ID('dbo.orgChart', 'U') IS NOT NULL DROP TABLE dbo.orgChart;";
+            using (SqlCommand sqlCmd = new SqlCommand { CommandText = sqldrop, Connection = sqlCon })
+            {
+                sqlCmd.ExecuteNonQuery();
+            }
+
+        }
+        static void createTable(SqlConnection sqlCon)
+        {
+            string sqlcr = @"CREATE TABLE [dbo].[orgChart](
+	            [id] [varchar](150) NOT NULL,
+                [pid] [varchar](150) NOT NULL,
+            	[name] [varchar](150) NULL,
+            	[type] [nchar](30) NULL
+            ) ON [PRIMARY]";
+            using (SqlCommand sqlCmd = new SqlCommand { CommandText = sqlcr, Connection = sqlCon })
+            {
+                sqlCmd.ExecuteNonQuery();
+            }
+
+        }
+        static void fillTable(SqlConnection sqlCon, List<orgNode> nodes)
+        {
+            string sqlc = "INSERT INTO orgChart(name,id,pid,type) VALUES (@name, @id, @pid,@type)";
+            nodes.ForEach((n) =>
+            {
+                using (SqlCommand sqlCmd1 = new SqlCommand { CommandText = sqlc, Connection = sqlCon })
+                {
+                    sqlCmd1.Parameters.AddWithValue("@name", n.name+" "+n.mlname);
+                    sqlCmd1.Parameters.AddWithValue("@id", n.id.ToString());
+                    sqlCmd1.Parameters.AddWithValue("@pid", n.pid.ToString());
+                    sqlCmd1.Parameters.AddWithValue("@type", n.type);
+                    sqlCmd1.ExecuteNonQuery();
+                }
+            });
+        }
+
     }
 }

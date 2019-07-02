@@ -1,0 +1,185 @@
+body {
+	margin: 0;
+	padding: 0;
+	height: 100%;
+	width: 100%;
+}
+
+.DRtable{
+	border-collapse:separate; 
+	border-spacing : 0px; 
+}
+
+.DRtable tbody tr:nth-child(even){
+	  background: #ebfbfc;
+}
+.DRtable tbody tr:nth-child(even):hover{
+	  background: #d8eff2;
+}
+.DRtable tbody tr:nth-child(odd){
+	  background: #ebfcfa
+}
+.DRtable tbody tr:nth-child(odd):hover{
+	  background: #ddedeb
+}
+
+
+.DRrow td{
+	 height: 90px;
+	 font-size: 10pt;
+	 padding: 10px;
+}
+
+.morda{
+	height: 80px;
+	max-width: 80px;
+	display: block;
+	margin-left: auto;
+	margin-right: auto;
+	box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);	
+}	
+
+
+.DRrow div{
+#	border: 1px dashed #c9d1a3;
+	color: #f7f0a3;
+	padding: 5px;
+    font-size: 20pt;	
+	margin: 5;
+    text-shadow: 1px 1px 2px black, 0 0 1em blue, 0 0 0.2em darkblue;
+}
+.DRrow a{
+	float: right;
+	font-size: 1pt;	
+	margin-top:5px;
+}
+.DRrow h1{
+  font-size: 12pt;
+  font-weight: normal;
+  margin: 0;
+}
+
+#content {
+	margin: 0;
+	padding: 0;
+	height: 100%;
+	width: 100%;
+  font-family: 'Segoe UI' ,Verdana,Arial;		
+}
+#cover {
+    display:none;
+    position:absolute;
+    left:0;
+    top:0;
+    width:100%;
+    height:100%;
+    background:white;
+    filter:alpha(Opacity = 50);
+    opacity:0.5;
+    -moz-opacity:0.5;
+    -khtml-opacity:0.5;
+}
+#popup {
+    display:none;
+    left:5px;
+    top: 40px;
+    width:0px; 
+
+    position:absolute;
+    z-index:100;
+	background-image: url("../img/bday.jpg");
+	background-size: auto;	
+  background-repeat: no-repeat;
+  background-position: 0px 0px; 
+
+    border:1px solid gray;
+    opacity:0;
+    -webkit-transform:scale(.5, .5);
+    -webkit-transition:all .5s ease-in-out;
+
+ box-shadow:3px 3px 9px 3px blue;
+    -moz-box-shadow:3px 3px 9px 3px blue;
+    -webkit-box-shadow:3px 3px 9px 3px blue;	
+}
+          
+#popup.shown {
+  display: block;
+  opacity: 1;
+  -webkit-transform:scale(1, 1);
+}
+
+#popup img{
+	height: 120px;
+	max-width: 150px;
+	margin-right: 5px;
+	display: block;
+	box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+	float: left;
+}
+#popup .glow{
+	color: #f7f0a3;
+    font-size: 17pt;	
+	margin: 0;
+	padding: 0;	
+	text-align: center;
+    text-shadow: 1px 1px 2px black, 0 0 1em blue, 0 0 0.2em darkblue;
+}
+#popup h2 {
+  color: #f7f0a3;
+  text-shadow: -1px 0 black, 0 1px black, 1px 0 black, 0 -1px black;
+	margin: 0;
+	padding: 0;	 
+  text-align: center;	
+}
+#popup h1 {
+  color: #f7f0a3;
+  text-shadow: -1px 0 black, 0 1px black, 1px 0 black, 0 -1px black;
+	margin: 0;
+	padding: 0;	 
+  text-align: center;	
+}
+#popup h3 {
+  color: #a7a053;
+  font-size: 12pt;
+  margin: 0;
+  padding: 0;	 
+  text-align: center;	
+}
+#popup span {
+	margin-left: 13px;
+}
+
+
+#cover-link {
+  position:absolute;
+  width:100%;
+  height:100%;
+  left:0;
+  top:0;
+}
+.popupCloseButton {
+	background-color: #fff;
+	border: 2px solid #999;
+	border-radius: 30px;
+	cursor: pointer;
+	display: inline-block;
+	font-family: arial;
+	font-weight: bold;
+	position: absolute;
+	top: -15px;
+	right: -15px;
+	font-size: 15px;
+	line-height: 25px;
+	width: 25px;
+	height: 25px;
+	text-align: center;
+ box-shadow:3px 3px 9px 3px blue;
+    -moz-box-shadow:3px 3px 9px 3px blue;
+    -webkit-box-shadow:3px 3px 9px 3px blue;	
+}
+.popupCloseButton:hover {
+	background-color: #ccc;
+}
+.popupInner{
+	display: none;
+}

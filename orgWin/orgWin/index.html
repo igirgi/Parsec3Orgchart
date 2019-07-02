@@ -67,14 +67,13 @@ onclick="window.open('excel.html?id=<%=id%>', 'window','width=660,height=360,top
 <text class="get-text get-text-1" x="260" y="180"><%=data.mlname%></text>
 <%
 var q = getHead(data.title, 31)
-console.log("TEMPLATE: "+data.name);
 %>
 <text class="get-text get-text-2" x="260" y="210"><%=q.head%></text>
 <text class="get-text get-text-3" width="290" x="290" y="35"><%=data.mob%></text>
 <text class="get-text get-text-4" width="290" x="210" y="55"><%=data.corp%></text>
 <text class="get-text get-text-4" width="290" x="210" y="75"><%=data.mail%></text>
 <% if(data.img) { %>
-<image xlink:href="../userimg/<%=data.img%>.jpg"  x="20" y="-20" height="165" preserveAspectRatio="xMidYMid slice" width="165"/>
+<image xlink:href="../userimg/<%=data.img%>.jpg"  x="20" y="-30" height="180" preserveAspectRatio="xMinYMin slice" width="165"/>
 <% } %>
 </g>
 </script>
@@ -92,31 +91,27 @@ onclick="window.open('excel.html?pid=<%=id%>', 'window','width=660,height=360,to
 <%
 var q = getHead(data.name, 10)
 var qq = getHead(q.tail, 22)
-var qqq = getHead(qq.tail, 22)
+var qqq = getHead(qq.tail, 20)
 %>
 
-<text class="get-text get-text-0" x="270" y="55"><%=q.head%></text>
-<text class="get-text get-text-1" x="270" y="90"><%=qq.head%></text>
-<text class="get-text get-text-1" x="270" y="125"><%=qqq.head%></text>
-<text class="get-text get-text-2" width="0" x="290" y="152"><%=qqq.tail%></text>
-<% if(data.img) { 
-var u = _.find(dataSource, function(num){return num.id == data.img;});
+<text class="get-text org-text-1" x="290" y="55"><%=q.head%></text>
+<text class="get-text org-text-2" x="180" y="90"><%=qq.head%></text>
+<text class="get-text org-text-2" x="180" y="120"><%=qqq.head%></text>
+<text class="get-text org-text-3" width="0" x="180" y="152"><%=qqq.tail%></text>
+<% if(data.boss) { 
+var u = _.find(dataSource, function(num){return num.id == data.boss;});
 var uio = u.mlname.split(" ");
 io = uio[0] ? uio[0][0] : "";
 io += uio[1] ? uio[1][0] : "";
 %>
-<text class="get-text get-text-4" x="120" y="200">Руководитель: <%=u.name%> <%=io%></text>
-<clipPath id="getMonicaClip"><circle cx="60" cy="165" r="50" /></clipPath><image preserveAspectRatio="xMidYMid slice" clip-path="url(#getMonicaClip)" xlink:href="../userimg/<%=u.img%>.jpg" x="10" y="115" height="100" width="100" style="cursor:grab;" onclick="chart.highlightNode('<%=u.id%>')"/>
+<text class="get-text get-text-4" x="190" y="200">Руководитель: <%=u.name%> <%=io%></text>
+    <image xlink:href="../userimg/<%=u.id%>.jpg" x="10" y="20" height="185" preserveaspectratio="xMinYMin slice" width="165" style="cursor:grab;" onclick="chart.highlightNode('<%=u.id%>')" />
+ <!-- clippath id="getMonicaClip"><circle cx="60" cy="165" r="50" /></!--clippath><image preserveaspectratio="xMidYMid slice" clip-path="url(#getMonicaClip)" xlink:href="../userimg/<%=u.id%>.jpg" x="10" y="115" height="100" width="100" style="cursor:grab;" onclick="chart.highlightNode('<%=u.id%>')" / -->
 <% } %>
 </g>
 </script>
 
 <script>
-function kaka(){
-document.getElementById("1077144").classList.remove("get-orange"); 
-document.getElementById("1077144").classList.add("get-blue");
-}
-
 var tmpl = {
   person:  _.template(document.getElementById('person-template').innerHTML),
   org: _.template(document.getElementById('org-template').innerHTML)

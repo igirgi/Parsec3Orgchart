@@ -11,10 +11,12 @@ namespace orgWin
         public Guid id { get; set; }
         public Guid pid { get; set; }
         public string type { get; set; }    //тип узла org, person
-        public string name { get; set; }   //фамилия или название
+        public string name { get; set; }   //фамилия сотрудник или название подразделения
         public string mlname { get; set; } //имя отчество
         public string title { get; set; }  //должность
-        public Guid? img { get; set; }      //имя файла рисунка
+        public string sam { get; set; }     //SamAccountName сотрудника
+        public Guid? img { get; set; }      //имя файла фотографии
+        public Guid? boss { get; set; }      //id начальника подразделения
         public string birthday { get; set; }  //день рождения
         public string mob { get; set; }      //мобильный телефон
         public string corp { get; set; }     //корпоративный телефон

@@ -60,6 +60,7 @@ namespace orgWin
                     node.pid = personItem.ORG_ID;
                     node.name = personItem.LAST_NAME.Trim();
                     node.mlname = (personItem.FIRST_NAME ?? "") + " " + (personItem.MIDDLE_NAME ?? "");
+                    node.sam = personItem.TAB_NUM;
                     node.type = "person";
                     ExtraFieldValue[] extraVals = iServ.GetPersonExtraFieldValues(sessionID, node.id);
                     //map extraFields from Parsec to orgNode
@@ -95,7 +96,7 @@ namespace orgWin
                     node.pid = orgItem.PARENT_ID;
                     node.name = orgItem.NAME;
                     var boss = nodes.Values.FirstOrDefault(n => n.name.Equals(orgItem.DESC.Trim()));
-                    if(boss != null) node.img =  boss.id;
+                    if(boss != null) node.boss =  boss.id;
                     node.type = "org";                    
                     nodes.Add(orgItem.ID, node);
                     orgs.Add(node.id);

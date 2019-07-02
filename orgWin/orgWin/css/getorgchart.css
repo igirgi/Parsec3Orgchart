@@ -96,6 +96,21 @@
 .get-org-chart .get-text-3 {
 	text-anchor: middle;
 }
+
+.get-org-chart .org-text-1 {
+	font-size: 40px;
+	text-anchor: middle;
+}
+.get-org-chart .org-text-2 {
+	font-size: 27px;
+}
+.get-org-chart .org-text-3 {
+		font-size: 24px;
+      
+}
+
+
+
 .get-org-chart .get-oc-tb {
 	z-index: 1
 }
@@ -123,7 +138,7 @@
 }
 
 .get-org-chart .get-left-icon {
-	background: url(graphics.png) -182px 0;
+	background: url(../img/graphics.png) -182px 0;
 	width: 26px;
 	height: 26px;
 	background-repeat: no-repeat
@@ -143,7 +158,7 @@
 }
 
 .get-org-chart .get-right-icon {
-	background: url(graphics.png) -130px 0;
+	background: url(../img/graphics.png) -130px 0;
 	width: 26px;
 	height: 26px;
 	background-repeat: no-repeat
@@ -162,7 +177,7 @@
 }
 
 .get-org-chart .get-up-icon {
-	background: url(graphics.png) -52px 0;
+	background: url(../img/graphics.png) -52px 0;
 	width: 26px;
 	height: 26px;
 	background-repeat: no-repeat;
@@ -182,7 +197,7 @@
 }
 
 .get-org-chart .get-down-icon {
-	background: url(graphics.png) -234px 0;
+	background: url(../img/graphics.png) -234px 0;
 	width: 26px;
 	height: 26px;
 	background-repeat: no-repeat;
@@ -190,42 +205,42 @@
 }
 
 .get-org-chart .get-oc-tb a.get-plus {
-	background: url(graphics.png) -26px 0;
+	background: url(../img/graphics.png) -26px 0;
 	float: right;
 	margin: 11px 10px 0 3px;
 	border: 0
 }
 
 .get-org-chart .get-oc-tb a.get-minus {
-	background: url(graphics.png) 0 0;
+	background: url(../img/graphics.png) 0 0;
 	float: right;
 	margin: 11px 10px 0 3px
 }
 
 .get-org-chart .get-oc-tb a.get-next {
-	background: url(graphics.png) -104px 0;
+	background: url(../img/graphics.png) -104px 0;
 	margin: 11px 3px 0 3px
 }
 
 .get-org-chart .get-oc-tb a.get-prev {
-	background: url(graphics.png) -156px 0;
+	background: url(../img/graphics.png) -156px 0;
 	margin: 11px 3px 0 3px
 }
 
 .get-org-chart .get-oc-tb a.get-grid-view {
-	background: url(graphics.png) -208px 0;
+	background: url(../img/graphics.png) -208px 0;
 	float: right;
 	margin: 11px 10px 0 3px
 }
 
 .get-org-chart .get-oc-tb a.get-print {
-	background: url(graphics.png) -312px 0;
+	background: url(../img/graphics.png) -312px 0;
 	float: right;
 	margin: 11px 10px 0 3px
 }
 
 .get-org-chart .get-oc-tb a.get-export-to-image {
-	background: url(graphics.png) -338px 0;
+	background: url(../img/graphics.png) -338px 0;
 	float: right;
 	margin: 11px 10px 0 3px
 }
@@ -269,7 +284,7 @@
 }
 
 .get-org-chart .get-oc-tb a.get-prev-page {
-	background: url(graphics.png) -156px 0;
+	background: url(../img/graphics.png) -156px 0;
 	margin: 11px 3px 0 17px;
 	display: inherit
 }

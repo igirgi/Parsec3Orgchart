@@ -14,8 +14,9 @@ namespace orgWin
         {
             Dictionary<Guid, orgNode> nodes = (Dictionary<Guid, orgNode>)HttpContext.Current.Application["orgdata"];
             Response.Clear();
-            Response.ContentType = "text/javascript; charset=utf-8";
-            Response.Write("var orgData=");
+            bool json_needed = Request.QueryString.ToString().ToUpper() == "JSON";
+            Response.ContentType = json_needed ? "application/json; charset=utf-8" : "text/javascript; charset=utf-8";
+            if(!json_needed) Response.Write("var orgData=");
             Response.Write(JsonConvert.SerializeObject(nodes.Values.ToList(),
                 Newtonsoft.Json.Formatting.None,
                             new JsonSerializerSettings

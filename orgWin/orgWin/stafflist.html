@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset=utf-8 />
+    <link rel="stylesheet" type="text/css" href="css/treegrid/default/easyui.css">
+    <link rel="stylesheet" type="text/css" href="css/treegrid/icon.css">
+    <link rel="stylesheet" type="text/css" href="css/treegrid/color.css">
+	<link rel="stylesheet" type="text/css" href="css/style1.css">
+    <script type="text/javascript" src="js/jquery.min.js"></script>
+    <script type="text/javascript" src="js/jquery.easyui.min.js"></script>
+    <script type="text/javascript" src="js/datagrid-filter.js"></script>	
+    <script src="orgData.aspx"></script>
+<style>
+html, body {
+  height:100%;
+}
+
+.tableContainer {
+  min-height:250px;
+  max-height:700px;
+  width:100%;
+}
+
+.datagrid-filter-row{
+  display: none;
+}
+.datagrid-header-row, .datagrid-row {
+    height: auto; 
+}
+.datagrid-btable {
+  margin-left:5px;
+}
+/*
+.tree-folder {
+    background: url(ff.gif) no-repeat 0 0;
+}
+
+.tree-folder-open {
+    background: url(ff.gif) no-repeat -17px 0;
+}
+*/
+.org {
+}
+.person1{
+    display: inline-block;
+    margin: 0 0.5rem 0.5rem 0;
+    padding: 0.5rem;
+    text-align: left;
+    background-color: white;
+    border: 1px solid transparentize( #58C25F, 0.5 );
+}
+.person  {
+    float: left;
+}
+.person td {
+    display: block;
+}
+
+
+</style>
+</head>
+<body>
+ <div class="tableContainer">
+<table id="tg">
+  <thead>
+<tr>
+  <th data-options="field:'name',width:'100%'"> </th>
+  <th data-options="field:'corp',width:0"> </th>
+  <th data-options="field:'mail',width:0"> </th>
+  <th data-options="field:'mob',width:'0'"> </th>
+</tr>
+  </thead>
+</table>
+</div>
+<div id="tb" style="padding:3px">
+    <span>Item ID:</span>
+    <input id="name" style="line-height:26px;border:1px solid #ccc" onkeyup="doSearch(this.value)"/>    
+</div>
+</body>
+<script>
+
+function doSearch(q){
+$('#tg').treegrid('addFilterRule', {
+								field: "name",
+								// op: opts.defaultFilterOperator,
+								op: "contains",
+								value: q
+							});
+$('#tg').treegrid('doFilter');
+}
+
+
+$(function(){
+
+jQuery.each(orgData, function(i,v){
+    orgData[i]._parentId = orgData[i].pid;
+});  	
+
+var oldRenderRow = $.fn.treegrid.defaults.view.renderRow;
+var cardview = $.extend({}, $.fn.treegrid.defaults.view, {
+    renderRow: function(target, fields, frozen, rowIndex, rowData){
+		var cc = [];	
+	    if(!rowData || rowData.type=="org"){
+			var _a8a=$.data(target,"treegrid");
+			var opts=_a8a.options;
+			for(var i=0;i<fields.length;i++){
+				var fld=fields[i];
+				if(fld!=opts.treeField)	continue;
+				var col=$(target).datagrid("getColumnOption",fld);
+				if(col){
+					cc.push("<td field=\""+fld+"\>");
+					cc.push("<div style=\"height:auto;\" ");
+					cc.push("class=\"datagrid-cell "+col.cellClass+" tree-node\">");
+					var val="";
+					var pid = rowData[opts.idField]
+					var parent = $(target).treegrid("getParent", pid);
+					while(parent){
+						val = parent[opts.treeField] + " >> " + val;
+						parent = $(target).treegrid("getParent", parent[opts.idField]);
+					}
+
+					val +=rowData[fld];
+					if(rowData.state=="closed"){
+						cc.push("<span class=\"tree-hit tree-collapsed\"></span>");
+						cc.push("<span class=\"tree-icon tree-folder "+(rowData.iconCls?rowData.iconCls:"")+"\"></span>");
+					}else{
+						cc.push("<span class=\"tree-hit tree-expanded\"></span>");
+						cc.push("<span class=\"tree-icon tree-folder tree-folder-open "+(rowData.iconCls?rowData.iconCls:"")+"\"></span>");
+					}
+					
+					rowData.checkState=undefined;
+					rowData.checked=undefined;
+					cc.push("<span class=\"tree-title\">"+val+"</span></span>");
+
+					cc.push("</div>");
+					cc.push("</td>");
+				}
+			}
+		}else{        
+			cc.push('<td colspan=' + fields.length + ' style="padding:10px 5px;border:0;">');
+			cc.push('<div class="card">');
+			cc.push("<img src='userimg/"+rowData.img+".jpg' style='height:120px;width:120px;' />")
+			cc.push("<h1>"+rowData.name+"</h1>");
+			cc.push('<div class="tit">'+rowData.title+'</div>');
+			cc.push('<div class="tel">corp:'+rowData.corp+'<br>mob.'+rowData.mob+'<br>');
+			cc.push('<a href="mailto:'+rowData.mail+'">'+rowData.mail+'</a>');
+			cc.push('</div>');
+			cc.push('</td>');
+		}
+        return cc.join('');
+    }
+});
+
+  var tg = $('#tg').treegrid({
+	view: cardview,
+    idField: 'id',
+    treeField: 'name',
+    remoteFilter: false,
+	toolbar: "#tb",
+    pagination: false,
+	emptyMsg:	"нет результатов поиска",
+    data: {rows:orgData},
+	rowStyler: function(index,row){
+		if(index && index.type =="org")
+			return {"class":"tree-hit", "style":"background-color:#6293BB;color:#fff;"}; // return inline style
+			// the function can return predefined css class and inline style
+			// return {class:'r1', style:{'color:#fff'}};	
+		else
+			return {"class": "person"};
+	},
+	autoRowHeight: true,
+	animate:true
+  });
+
+  tg.treegrid('enableFilter');
+
+});
+</script>
+</html>

@@ -20,6 +20,8 @@ namespace orgWin
         public string birthday { get; set; }  //день рождения
         public string mob { get; set; }      //мобильный телефон
         public string corp { get; set; }     //корпоративный телефон
+        public string office { get; set; }     //адрес офиса
+        public string room { get; set; }     //номер комнаты
         public string mail { get; set; }
         public object this[string propertyName]
         {

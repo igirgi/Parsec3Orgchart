@@ -60,7 +60,11 @@
       <HintPath>..\packages\Newtonsoft.Json.12.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="System.ComponentModel.Composition" />
     <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="System.IO.Compression" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Numerics" />
     <Reference Include="System.Web.DynamicData" />
     <Reference Include="System.Web.Entity" />
     <Reference Include="System.Web.ApplicationServices" />
@@ -86,6 +90,7 @@
     <Content Include="css\tableexport.min.css" />
     <Content Include="excel.html" />
     <Content Include="getHistory2Excel.aspx" />
+    <Content Include="js\stafflist2.js" />
     <Content Include="orgData.aspx" />
     <Content Include="parsecStatus.aspx" />
     <Content Include="Global.asax" />
@@ -118,6 +123,8 @@
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
+    <Content Include="stafflist.html" />
+    <Content Include="stafflist2.html" />
     <Content Include="Web References\IntegrationWebService\AccessGroup.datasource">
       <DependentUpon>Reference.map</DependentUpon>
     </Content>

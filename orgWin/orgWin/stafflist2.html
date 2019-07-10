@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<head>
+  <meta charset="UTF-8">
+<style>
+.card{
+width: 350px;
+border: 1px solid gray;
+box-shadow: 1px 1px 3px #888;
+min-height: 150px;
+margin: 10px;
+  font-family: arial;
+}
+
+.card img{
+  margin: 10px 0 0 10px;	
+  width: 90px;  
+  height: 120px;  
+  object-fit: cover;  
+}
+
+.card h1{
+  font-weight: bold;
+  margin-left: 0px;
+  margin-top: -115px;
+  font-size: 1.0em;
+}
+
+.tit {
+  position: relative;
+  margin-left: 120px;
+  margin-top: -5px;
+  height: 125px;  
+  max-height: 115px;  
+  font-size: 0.8em;
+}
+.card a {
+  float: right;
+  font-size: 0.8em;
+  margin: -15px 20px -15px 0px;  
+  color: #999;
+}
+.tel {
+  font-size: 0.7em;
+  width: 90%;
+  margin: 0 0 5px 10px;
+}
+
+html, body {
+	margin: 0;
+	padding: 0;
+}
+
+#selector {
+	float: right;
+	width: 60%;
+	margin: 0 15px 0 0;
+	height: 30px;
+	line-height:26px;
+	border:1px solid #ccc;
+	font-size:1.1em;	
+	font-family: calibri;	
+}
+
+input{
+	float: left;
+	width: 30%;
+	margin: 0 5px 0 15px;
+	height: 30px;
+	line-height:26px;
+	border:1px solid #ccc;
+	font-size:1.1em;	
+	font-family: calibri;
+}
+#container {
+  width: 100%;
+  font-family: calibri;
+  box-sizing: border-box;
+  display: flex;
+  flex-wrap: wrap;
+}
+
+</style>
+	<script type="text/javascript" src="js/stafflist2.js"></script>  
+	<script type="text/javascript" src="orgdata.aspx"></script>
+<script type="text/html" id="templateText">
+	  <% for ( var i = 0; i < obj.length; i++ ) { %>
+		<div class="card">
+			<img src="../userimg/<%=obj[i].img%>.jpg" />			
+			<div class="tit">
+				<h1><%=obj[i].name%> <%=obj[i].mlname%></h1>
+				<%=obj[i].title%><br>
+				<%=obj[i].department%><br>
+			</div>			
+			<a href="mailto:<%=obj[i].mail%>">Написать сообщение</a>
+			<hr/>
+			<table class="tel">
+			<tr><td>Офис</td><td><%=obj[i].office%></td></tr>
+			<tr><td>Рабочий телефон</td><td><%=obj[i].corp%></td></tr>
+			<% if(obj[i].mob){ %>
+			<tr><td>Мобильный телефон</td><td><%=obj[i].mob%></td></tr>
+			<% } %>
+			<tr><td>Электронная почта</td><td><%=obj[i].mail%></td></tr>
+			<tr><td>Расположение</td><td>каб. <%=obj[i].room%></td></tr>
+			</table>
+		</div>
+	  <% } %>
+</script>	
+
+</head>
+
+<body>
+<input id="searcher" type="text" placeholder=" Поиск по имени..." onkeyup="trottle(this.value)"/>
+<select id="selector"></select>
+<div id="container"></div>
+</body>
+</html>

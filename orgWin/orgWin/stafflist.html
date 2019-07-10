@@ -2,23 +2,35 @@
 <html>
 <head>
 <meta charset=utf-8 />
-    <link rel="stylesheet" type="text/css" href="css/treegrid/default/easyui.css">
+    <link rel="stylesheet" type="text/css" href="css/treegrid/easyui.css">
     <link rel="stylesheet" type="text/css" href="css/treegrid/icon.css">
     <link rel="stylesheet" type="text/css" href="css/treegrid/color.css">
-	<link rel="stylesheet" type="text/css" href="css/style1.css">
     <script type="text/javascript" src="js/jquery.min.js"></script>
     <script type="text/javascript" src="js/jquery.easyui.min.js"></script>
     <script type="text/javascript" src="js/datagrid-filter.js"></script>	
-    <script src="orgData.aspx"></script>
+    <script type="text/javascript" src="orgData.aspx"></script>
 <style>
 html, body {
-  height:100%;
+  margin: 0;
+  padding: 0;
+  
 }
 
+input{
+	height: 30px;
+	line-height:26px;
+	border:1px solid #ccc;
+	width:98%;
+	font-size:1.1em;
+}
 .tableContainer {
-  min-height:250px;
+/*  min-height:250px;
   max-height:700px;
+*/
+  height: 100%;  
   width:100%;
+  margin: 0;
+  padding: 0;
 }
 
 .datagrid-filter-row{
@@ -28,26 +40,9 @@ html, body {
     height: auto; 
 }
 .datagrid-btable {
-  margin-left:5px;
+  
 }
-/*
-.tree-folder {
-    background: url(ff.gif) no-repeat 0 0;
-}
-
-.tree-folder-open {
-    background: url(ff.gif) no-repeat -17px 0;
-}
-*/
 .org {
-}
-.person1{
-    display: inline-block;
-    margin: 0 0.5rem 0.5rem 0;
-    padding: 0.5rem;
-    text-align: left;
-    background-color: white;
-    border: 1px solid transparentize( #58C25F, 0.5 );
 }
 .person  {
     float: left;
@@ -56,6 +51,73 @@ html, body {
     display: block;
 }
 
+.card{
+	width: 320px;
+	height: 150px;
+	border: 1px solid gray;
+	box-shadow: 1px 1px 5px #888;
+
+  font-family: europe;
+
+  justify-content: center;
+    border:1px solid gray;
+
+ box-shadow:1px 1px 5px 1px gray;
+    -moz-box-shadow:1px 1px 5px 1px gray;
+    -webkit-box-shadow:1px 1px 5px 1px gray;	
+  
+}
+.imgholder{
+  width: 130px;  
+  height: 148px;
+  text-align:center;  
+  display:flex;
+  align-items:center;
+  justify-content:center;  
+    float:left;
+}
+.absent{
+  background-color:#dde;
+}
+.in{
+ background-color:#8c3;
+}
+.out{
+ background-color:#FFbF62;
+}
+
+.card img{
+  width: 140px;  
+  height: 140px;
+  object-fit:scale-down;
+  border-radius: 50%;
+}
+
+.card h1{
+  font-weight: bold;
+  font-family: arial;
+   font-size: 1.2em;
+  margin-left: 140px;
+  margin-top: 0px;
+  min-height: 120px;
+  background-color: 
+}
+
+.tit {
+  margin-left: 140px;
+  margin-top: 10px;
+  font-family: segoe ui;
+  font-size: 1.0em;
+  height:20px;
+  overflow-y:hidden;
+}
+.tel {
+  margin-left: 150px;
+  margin-top: -65px;
+  font-family: segoe ui;
+  font-size: 1.0em;
+  font-size: 0.7em;
+}
 
 </style>
 </head>
@@ -73,12 +135,12 @@ html, body {
 </table>
 </div>
 <div id="tb" style="padding:3px">
-    <span>Item ID:</span>
-    <input id="name" style="line-height:26px;border:1px solid #ccc" onkeyup="doSearch(this.value)"/>    
+    <input id="name" placeholder="Поиск..." onkeyup="doSearch(this.value)"/>    
 </div>
 </body>
 <script>
-
+var parsecState;
+  
 function doSearch(q){
 $('#tg').treegrid('addFilterRule', {
 								field: "name",
@@ -87,6 +149,7 @@ $('#tg').treegrid('addFilterRule', {
 								value: q
 							});
 $('#tg').treegrid('doFilter');
+setParsecStatus(parsecState);
 }
 
 
@@ -94,6 +157,7 @@ $(function(){
 
 jQuery.each(orgData, function(i,v){
     orgData[i]._parentId = orgData[i].pid;
+	if(orgData[i].name=="ИГИРГИ") orgData[i]._parentId = null;
 });  	
 
 var oldRenderRow = $.fn.treegrid.defaults.view.renderRow;
@@ -137,14 +201,12 @@ var cardview = $.extend({}, $.fn.treegrid.defaults.view, {
 				}
 			}
 		}else{        
-			cc.push('<td colspan=' + fields.length + ' style="padding:10px 5px;border:0;">');
+			cc.push('<td colspan=' + fields.length + ' style="padding:5px;border:0;">');
 			cc.push('<div class="card">');
-			cc.push("<img src='userimg/"+rowData.img+".jpg' style='height:120px;width:120px;' />")
-			cc.push("<h1>"+rowData.name+"</h1>");
+			cc.push("<div class='imgholder absent' id='"+rowData.id+"'><img src='userimg/"+rowData.img+".jpg'  /></div>")
 			cc.push('<div class="tit">'+rowData.title+'</div>');
-			cc.push('<div class="tel">corp:'+rowData.corp+'<br>mob.'+rowData.mob+'<br>');
-			cc.push('<a href="mailto:'+rowData.mail+'">'+rowData.mail+'</a>');
-			cc.push('</div>');
+			cc.push("<h1>"+rowData.name+"<br>"+rowData.mlname+"</h1>");
+			cc.push('<div class="tel">внутр.: '+rowData.corp+'<br>мобил.: '+rowData.mob+'<br>эл.почта: '+rowData.mail+'</div>');
 			cc.push('</td>');
 		}
         return cc.join('');
@@ -162,7 +224,7 @@ var cardview = $.extend({}, $.fn.treegrid.defaults.view, {
     data: {rows:orgData},
 	rowStyler: function(index,row){
 		if(index && index.type =="org")
-			return {"class":"tree-hit", "style":"background-color:#6293BB;color:#fff;"}; // return inline style
+			return {"class":"tree-hit", "style":"background-color:#6985af;color:#fff;"}; // return inline style
 			// the function can return predefined css class and inline style
 			// return {class:'r1', style:{'color:#fff'}};	
 		else
@@ -173,7 +235,30 @@ var cardview = $.extend({}, $.fn.treegrid.defaults.view, {
   });
 
   tg.treegrid('enableFilter');
-
+ 
+  var xhttp = window.XMLHttpRequest ? new XMLHttpRequest() : new ActiveXObject("Microsoft.XMLHTTP");
+	xhttp.onreadystatechange = function () {
+		if (xhttp.readyState === 4 && xhttp.status === 200) {
+		    parsecState = JSON.parse(xhttp.responseText);
+			setParsecStatus(parsecState);
+		}
+	};
+  xhttp.open("GET", "parsecStatus.aspx", true);
+  xhttp.send();
 });
+
+
+function setParsecStatus(state){
+  for(var id in state){
+	var no = document.getElementById(id);
+	if(no){
+		var newClass =  state[id].tag;
+		var oldClass = no.classList.item(1);		
+		no.classList.remove(oldClass);
+		no.classList.add(newClass);
+	}
+  }  
+}
+
 </script>
 </html>

@@ -105,6 +105,27 @@ function load(){
 		selector.options[selector.options.length] = new Option(a.name, a.ch);
 	});
 	selector.addEventListener("change", function(){trottle(searcher.value)});
+	
+	var xhttp = window.XMLHttpRequest ? new XMLHttpRequest() : new ActiveXObject("Microsoft.XMLHTTP");
+	xhttp.onreadystatechange = function () {
+		if (xhttp.readyState === 4 && xhttp.status === 200) {
+		    parsecState = JSON.parse(xhttp.responseText);
+			setParsecStatus(parsecState);
+		}
+	};
+	xhttp.open("GET", "parsecStatus.aspx", true);
+	xhttp.send();	
+}
+
+function setParsecStatus(state){
+  for(var id in state){
+	var no = document.getElementById(id);
+	if(no)
+		no.className = state[id].tag;
+  }  
+  fdata.forEach( function(a){
+	  a.state = state[a.id].tag;
+  });
 }
 
 function toxlsx() {

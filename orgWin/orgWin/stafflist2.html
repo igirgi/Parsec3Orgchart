@@ -45,6 +45,37 @@ margin: 10px;
   margin: 0 0 5px 10px;
 }
 
+.in{
+  position: relative;
+  margin: -20px 0 0 95px;
+  width: 24px;
+  height: 24px;
+  background-color: #ABFF00;
+  border-radius: 50%;
+  box-shadow: rgba(0, 0, 0, 0.2) 0 -1px 7px 1px, inset #304701 0 -1px 9px, #89FF00 0 2px 12px;
+}
+
+.out{
+  position: relative;
+  margin: -20px 0 0 95px;
+  width: 24px;
+  height: 24px;
+  background-color: #ffd50c;
+  border-radius: 50%;
+  box-shadow: rgba(0, 0, 0, 0.2) 0 -1px 7px 1px, inset #304701 0 -1px 9px, #ff6666  0 2px 12px;
+}
+
+.absent {
+  position: relative;
+  margin: -20px 0 0 95px;
+  width: 24px;
+  height: 24px;
+  background-color: #eee;
+  border-radius: 50%;
+  box-shadow: rgba(0, 0, 0, 0.2) 0 -1px 7px 1px, inset #006 0 -1px 9px, #dde 0 2px 14px;
+}
+
+
 html, body {
 	margin: 0;
 	padding: 0;
@@ -85,7 +116,6 @@ input{
   display: flex;
   flex-wrap: wrap;
 }
-
 </style>
 	<script type="text/javascript" src="js/jquery.min.js"></script>
 	<script type="text/javascript" src="js/stafflist2.js"></script>  
@@ -93,7 +123,8 @@ input{
 <script type="text/html" id="templateText">
 	  <% for ( var i = 0; i < obj.length; i++ ) { %>
 		<div class="card">
-			<img src="../userimg/<%=obj[i].img%>.jpg" />			
+			<img src="../userimg/<%=obj[i].img%>.jpg" />
+			<div id="<%=obj[i].id%>" class="<%=obj[i].state%>"></div>
 			<div class="tit">
 				<h1><%=obj[i].name%> <%=obj[i].mlname%></h1>
 				<%=obj[i].title%><br>
@@ -121,7 +152,7 @@ input{
 <select id="selector"></select>
 <img src="img/toexcel.jpg" class="excelbtn" onclick="toxlsx()"/>
 <div id="container"></div>
-<table id="exporter" border=1>
+<table id="exporter" style="display:none;" border=1>
 <thead>
 <tr>
 <th>ФИО</th>

@@ -2,7 +2,8 @@
 var template, body;
 var odata = [];  //orgs
 var pdata = []; //persons
-var selector, searcher;	
+var fdata = []; //filtered persons
+var selector, searcher, exporter;	
 
 var templater = new (function(){
   var cache = {};
@@ -32,10 +33,9 @@ var templater = new (function(){
 
 function trottle(str) {
 		str = str.toUpperCase();
-		var fdata = pdata.filter(function(a){
+		fdata = pdata.filter(function(a){
 			var q = selector.options[selector.selectedIndex].value.indexOf(a.pid) >= 0
 			var qq = (a.name.toUpperCase().indexOf(str) != -1 || a.mlname.toUpperCase().indexOf(str) != -1)
-			var qqq= q && qq;
 			return q && qq;
 		});
 		body.innerHTML = template(fdata);		
@@ -46,6 +46,7 @@ function load(){
 	body =document.getElementById('container');
 	searcher = document.getElementById('searcher');	
     selector = document.getElementById('selector');
+	exporter = document.getElementById('exporter');
 	
 	for(var i=0;i<orgData.length;i++){  //разделяем на персоны и подразделения
 		var d = orgData[i];
@@ -56,10 +57,10 @@ function load(){
 			pdata.push(d);
 		}
 	}
-	pdata.sort(function compare( a, b ) { //персоны по алфавиту
+	fdata = pdata.sort(function compare( a, b ) { //персоны по алфавиту
 		return ( a.name < b.name )? -1 : (( a.name > b.name )? 1: 0);
 	});
-	body.innerHTML = template(pdata);
+	body.innerHTML = template(fdata);
 		
 	var roots = odata.filter(function(a){  //корневые организации - у которых нет родителя (pid есть)
 		var f1 = function(b){return b.id == a.pid;};
@@ -104,6 +105,33 @@ function load(){
 		selector.options[selector.options.length] = new Option(a.name, a.ch);
 	});
 	selector.addEventListener("change", function(){trottle(searcher.value)});
+}
+
+function toxlsx() {
+	if(fdata.length == 0) return;
+	var bd = exporter.getElementsByTagName('tbody')[0];
+    bd.innerHTML = "";
+                
+	fdata.forEach( function(a){
+		var row = bd.insertRow(bd.rows.length);
+		row.insertCell(-1).appendChild(document.createTextNode(a.name +" "+a.mlname));	
+		row.insertCell(-1).appendChild(document.createTextNode(a.department));
+		row.insertCell(-1).appendChild(document.createTextNode(a.title));
+		row.insertCell(-1).appendChild(document.createTextNode(a.office));
+		row.insertCell(-1).appendChild(document.createTextNode(a.corp));
+		row.insertCell(-1).appendChild(document.createTextNode( a.mob || "" ));
+		row.insertCell(-1).appendChild(document.createTextNode(a.mail));
+		row.insertCell(-1).appendChild(document.createTextNode(a.room));
+    });
+	
+	var EXPORTTABLE = new TableExport(document.getElementById('exporter'), {
+			formats: ['xlsx'],
+			exportButtons: false,
+			filename: 'staff-export'
+	});
+	
+    var exportData = EXPORTTABLE.getExportData()['exporter']['xlsx'];
+    EXPORTTABLE.export2file(exportData.data, exportData.mimeType, exportData.filename, exportData.fileExtension, exportData.merges, exportData.RTL, exportData.sheetname);
 }
 
 (function(){

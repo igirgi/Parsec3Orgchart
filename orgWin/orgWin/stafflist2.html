@@ -51,16 +51,23 @@ html, body {
 }
 
 #selector {
-	float: right;
-	width: 60%;
-	margin: 0 15px 0 0;
-	height: 30px;
+	float: left;
+	width: 45%;
+	margin: 0 15px 0 30px;
+	height: 33px;
 	line-height:26px;
 	border:1px solid #ccc;
 	font-size:1.1em;	
 	font-family: calibri;	
 }
-
+.excelbtn {
+	float: right;
+	height: 34px;
+	width: 47px;
+	border: 2px outset #ccc;
+	margin: 0px 50px 0 0;
+	cursor: pointer;
+}
 input{
 	float: left;
 	width: 30%;
@@ -80,6 +87,7 @@ input{
 }
 
 </style>
+	<script type="text/javascript" src="js/jquery.min.js"></script>
 	<script type="text/javascript" src="js/stafflist2.js"></script>  
 	<script type="text/javascript" src="orgdata.aspx"></script>
 <script type="text/html" id="templateText">
@@ -111,6 +119,27 @@ input{
 <body>
 <input id="searcher" type="text" placeholder=" Поиск по имени..." onkeyup="trottle(this.value)"/>
 <select id="selector"></select>
+<img src="img/toexcel.jpg" class="excelbtn" onclick="toxlsx()"/>
 <div id="container"></div>
+<table id="exporter" border=1>
+<thead>
+<tr>
+<th>ФИО</th>
+<th>Подразделение</th>
+<th>Должность</th>
+<th>Офис</th>
+<th>Рабочий телефон</th>
+<th>Мобильный телефон</th>
+<th>Электронная почта</th>
+<th>Расположение</th>
+</tr>
+</thead>
+<tbody></tbody></table>
+
+    <script src="js/moment.min.js"></script>
+    <script type="text/javascript" src="js/xlsx.core.min.js"></script>
+    <script type="text/javascript" src="js/Blob.min.js"></script>
+    <script type="text/javascript" src="js/FileSaver.min.js"></script>
+    <script type="text/javascript" src="js/tableexport.js"></script>
 </body>
 </html>

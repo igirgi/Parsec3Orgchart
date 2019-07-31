@@ -34,9 +34,10 @@ var templater = new (function(){
 function trottle(str) {
 		str = str.toUpperCase();
 		fdata = pdata.filter(function(a){
-			var q = selector.options[selector.selectedIndex].value.indexOf(a.pid) >= 0
-			var qq = (a.name.toUpperCase().indexOf(str) != -1 || a.mlname.toUpperCase().indexOf(str) != -1)
-			return q && qq;
+			if( selector.options[selector.selectedIndex].value.indexOf(a.pid) == -1)
+					return false;
+//			var qq = (a.name.toUpperCase().indexOf(str) != -1 || a.mlname.toUpperCase().indexOf(str) != -1)
+			return Object.values(a).join("&").toUpperCase().indexOf(str) != -1			
 		});
 		body.innerHTML = template(fdata);		
 };
@@ -54,6 +55,8 @@ function load(){
 			odata.push(d);
 		}else {
 			d.department = orgData.find(function(a){return a.id ==d.pid}).name;
+			if(d.corp && d.corp.startsWith("86-1741-"))
+				d.tel = "7-495-989-80-22 доб. "+d.corp.split("-")[2]
 			pdata.push(d);
 		}
 	}
@@ -139,7 +142,8 @@ function toxlsx() {
 		row.insertCell(-1).appendChild(document.createTextNode(a.department));
 		row.insertCell(-1).appendChild(document.createTextNode(a.title));
 		row.insertCell(-1).appendChild(document.createTextNode(a.office));
-		row.insertCell(-1).appendChild(document.createTextNode(a.corp));
+		row.insertCell(-1).appendChild(document.createTextNode(a.tel || "" ));		
+		row.insertCell(-1).appendChild(document.createTextNode(a.corp || ""));
 		row.insertCell(-1).appendChild(document.createTextNode( a.mob || "" ));
 		row.insertCell(-1).appendChild(document.createTextNode(a.mail));
 		row.insertCell(-1).appendChild(document.createTextNode(a.room));

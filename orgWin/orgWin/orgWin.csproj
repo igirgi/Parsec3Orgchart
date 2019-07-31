@@ -47,6 +47,10 @@
       <HintPath>..\packages\EntityFramework.6.1.0\lib\net45\EntityFramework.SqlServer.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="LumenWorks.Framework.IO, Version=4.0.0.0, Culture=neutral, PublicKeyToken=5ad3ea2f85776344, processorArchitecture=MSIL">
+      <HintPath>..\packages\LumenWorksCsvReader.4.0.0\lib\net45\LumenWorks.Framework.IO.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="Microsoft.AspNet.Identity.Core, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.AspNet.Identity.Core.2.2.2\lib\net45\Microsoft.AspNet.Identity.Core.dll</HintPath>
       <Private>True</Private>
@@ -125,6 +129,7 @@
     </None>
     <Content Include="stafflist.html" />
     <Content Include="stafflist2.html" />
+    <Content Include="uploadcsv.aspx" />
     <Content Include="Web References\IntegrationWebService\AccessGroup.datasource">
       <DependentUpon>Reference.map</DependentUpon>
     </Content>
@@ -259,6 +264,13 @@
       <AutoGen>True</AutoGen>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>Settings.settings</DependentUpon>
+    </Compile>
+    <Compile Include="uploadcsv.aspx.cs">
+      <DependentUpon>uploadcsv.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="uploadcsv.aspx.designer.cs">
+      <DependentUpon>uploadcsv.aspx</DependentUpon>
     </Compile>
     <Compile Include="Web References\IntegrationWebService\Reference.cs">
       <AutoGen>True</AutoGen>

@@ -32,6 +32,7 @@ margin: 10px;
   height: 125px;  
   max-height: 115px;  
   font-size: 0.8em;
+  z-index: -1;
 }
 .card a {
   float: right;
@@ -134,7 +135,10 @@ input{
 			<hr/>
 			<table class="tel">
 			<tr><td>Офис</td><td><%=obj[i].office%></td></tr>
-			<tr><td>Рабочий телефон</td><td><%=obj[i].corp%></td></tr>
+			<% if(obj[i].tel){ %>
+			<tr><td>Рабочий телефон</td><td><%=obj[i].tel%></td></tr>
+			<% } %>
+			<tr><td>Корпоративный телефон</td><td><%=obj[i].corp%></td></tr>
 			<% if(obj[i].mob){ %>
 			<tr><td>Мобильный телефон</td><td><%=obj[i].mob%></td></tr>
 			<% } %>
@@ -148,7 +152,7 @@ input{
 </head>
 
 <body>
-<input id="searcher" type="text" placeholder=" Поиск по имени..." onkeyup="trottle(this.value)"/>
+<input id="searcher" type="text" placeholder=" Поиск..." onkeyup="trottle(this.value)"/>
 <select id="selector"></select>
 <img src="img/toexcel.jpg" class="excelbtn" onclick="toxlsx()"/>
 <div id="container"></div>
@@ -160,6 +164,7 @@ input{
 <th>Должность</th>
 <th>Офис</th>
 <th>Рабочий телефон</th>
+<th>Корпоративный телефон</th>
 <th>Мобильный телефон</th>
 <th>Электронная почта</th>
 <th>Расположение</th>
